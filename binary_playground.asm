@@ -26,6 +26,32 @@ MAIN:
   jsr PRINT_MSG
   bcc .Loop_Print_Screen
 
+  +At 4,10
+  lda #%10001000
+  sta A_IMAGE
+  jsr PRINT_BINARY
+
+  +At 5,10
+  lda #%10000000
+  sta M_IMAGE
+  jsr PRINT_BINARY
+
+  +At 4,22
+  lda A_IMAGE
+  jsr PRINT_SIGNED
+
+  +At 5,22
+  lda M_IMAGE
+  jsr PRINT_SIGNED
+
+  +At 4,28
+  lda A_IMAGE
+  jsr PRINT_UNSIGNED
+
+  +At 5,28
+  lda M_IMAGE
+  jsr PRINT_UNSIGNED
+
 .Exit_MAIN:
   rts
 
@@ -64,3 +90,5 @@ __PUTCHAR         = PUT_ECM_CHAR
   +Print_Msg
   +Print_Nth
   +Print_Imm
+
+!source "print_images.asm"
