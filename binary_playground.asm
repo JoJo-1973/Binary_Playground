@@ -75,8 +75,8 @@ MOCK_SCREEN:
   !text 3,23,ECM_BG2,"SIG",0
   !text 3,28,ECM_BG2,"UNS",0
   !text 3,35,ECM_BG2,"NVZC",0
-  !text 4,7,ECM_BG2,"A:",ECM_BG0," 0000 0000   +000  000    0000",0
-  !text 5,7,ECM_BG3,"M:",ECM_BG0," 0000 0000   +000  000    0000",0
+  !text 4,7,ECM_BG2,"A:",ECM_BG0,0
+  !text 5,7,ECM_BG3,"M:",ECM_BG0,0
   !text $FF,$FF
 
 ; Install VIC-II macros

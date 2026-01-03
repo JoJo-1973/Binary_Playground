@@ -14,7 +14,7 @@ PRINT_BINARY:
   tya
 
 .Print_Bit:
-  rol a                         ; Move the most significat bit in C.
+  rol a                         ; Move the most significat bit in C,
   pha
 
   lda #0
