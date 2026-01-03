@@ -14,7 +14,7 @@ MAIN:
   lda #<PALETTE
   ldx #>PALETTE
   jsr VIC_PALETTE
-  +Vic_Ext_Color_On
+  +VIC_Ext_Color_On
 
   lda #<MOCK_SCREEN
   sta ZP_1
