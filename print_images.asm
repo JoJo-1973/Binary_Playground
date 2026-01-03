@@ -1,25 +1,25 @@
-; Routines per stampare i contenuti delle immagini di A, M e P
+; Output routines to print contents of A, M and P
 
-; Stampa il contenute di .A in formato binario
+; Print .A in binary format
 !zone Print_Binary
 PRINT_BINARY:
-  ldx #8                        ; Un byte contiene 8 bit.
+  ldx #8                        ; One byte is equal to 8 bits.
 
 .Loop_Print_Bit:
-  cpx #4                        ; Controlla se sono state stampate già 4 cifre.
+  cpx #4                        ; Check if 4 bits have already been printed.
   bne .Print_Bit
-  tay                           ; Dopo aver stampato il 4° bit lascia uno spazio.
+  tay                           ; Print a space after the 4th bit.
   lda #29
-  jsr CHROUT
+  jsr __PUTCHAR
   tya
 
 .Print_Bit:
-  rol a                         ; Sposta il bit più significativo in C,
+  rol a                         ; Move the most significat bit in C.
   pha
 
   lda #0
-  adc #"0"                      ; aggiungi il codice ASCII della cifra 0
-  jsr __PUTCHAR                 ; e stampalo.
+  adc #"0"                      ; add the ASCII code of "0"
+  jsr __PUTCHAR                 ; and print the result.
 
   pla
   dex
@@ -29,33 +29,33 @@ PRINT_BINARY:
   rts
 !zone
 
-; Stampa il contenuto di .A come decimale senza segno
+; Print .A in unsigned decimal format
 !zone Print_Unsigned
 PRINT_UNSIGNED:
-  ldx #2                        ; In un byte il valore massimo è dell'ordine delle centinaia.
-  ldy #0                        ; .Y conterrà la cifra calcolata.
+  ldx #2                        ; Largest byte value is in the order of hundreds.
+  ldy #0                        ; .Y will store the computed digit.
 
 .Loop_Calc_Digit:
-  sec                           ; Sottrai una potenza di 10
+  sec                           ; Subtract a power of 10
   sbc .DEC_POWERS,x
-  iny                           ; ed incrementa la cifra calcolata:
-  bcs .Loop_Calc_Digit          ; se la sottrazione non ha causato un prestito allora ripeti.
+  iny                           ; and increment the computed digit:
+  bcs .Loop_Calc_Digit          ; if there is no borrow keep on subtracting.
 
-  adc .DEC_POWERS,x             ; Il ciclo termina quando si esegue una sottrazione di troppo
-  dey                           ; quindi si riaggiunge quanto sottratto.
+  adc .DEC_POWERS,x             ; Loop ends after one subtraction too many,
+  dey                           ; so add back the amount subtracted.
 
 .Print_Digit:
-  pha                           ; Salvia .A sullo stack e sovrascrivilo con .Y
+  pha                           ; Save .A on the stack and overwrite it with .Y
   tya
-  clc                           ; poi aggiungi il codice ASCII di "0" e stampalo.
+  clc                           ; then add the ASCII code of "0" and print the result.
   adc #"0"
   jsr __PUTCHAR
 
 .Next_Calc_Digit:
-  pla                           ; Infine ripristina .A,
-  ldy #0                        ; prepara .Y al calcolo della cifra successiva
-  dex                           ; e, se ce ne sono ancora,
-  bpl .Loop_Calc_Digit          ; passa alla successiva potenza di 10.
+  pla                           ; Finally restore .A,
+  ldy #0                        ; prepare .Y for the computation of next digit
+  dex                           ; and switch to the next power of 10
+  bpl .Loop_Calc_Digit          ; if they're not finished.
 
 .Exit_PRINT_UNSIGNED
   rts
@@ -64,21 +64,21 @@ PRINT_UNSIGNED:
   !byte 1,10,100
 !zone
 
-; Stampa il contenuto di .A come decimale con segno
+; Print .A in signed decimal format
 !zone Print_Signed
 PRINT_SIGNED:
-  tay                           ; Salva una copia di .A,
-  bmi .Negative                 ; Se il numero è negativo, salta avanti
-  lda #"+"                      ; altrimenti carica .A col codice ASCII del segno +
-  +Skip2                        ; ed ignora la prossoma istruzione.
+  tay                           ; Save a copy of .A in .Y.
+  bmi .Negative                 ; If the value is negative, skip forward
+  lda #"+"                      ; otherwise load .A with the ASCII code of "+"
+  +Skip2                        ; and skip next instruction.
 
 .Negative:
-  lda #"-"                      ; Carica .A col codice ASCII del segno -
-  jsr __PUTCHAR                 ; e stampa il segno.
+  lda #"-"                      ; Load .A with ASCII code of "-"
+  jsr __PUTCHAR                 ; and print whatever character is in .A.
 
-  tya                           ; Riprendi .A
-  bpl .Exit_PRINT_SIGNED        ; e se è positivo stampalo ed esci,
-  eor #$FF                      ; altrimenti prima complementalo a 2.
+  tya                           ; Restore .A
+  bpl .Exit_PRINT_SIGNED        ; and if it's positive just print it and exit
+  eor #$FF                      ; otherwise 2-complement it before printing it.
   clc
   adc #1
 
