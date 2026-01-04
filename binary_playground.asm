@@ -52,6 +52,16 @@ MAIN:
   lda M_IMAGE
   jsr PRINT_UNSIGNED
 
+  +At 4,35
+  lda #%10000010
+  sta P_IMAGE
+  jsr PRINT_FLAGS
+
+  +At 5,35
+  lda #%01000001
+  sta P_IMAGE
+  jsr PRINT_FLAGS
+
 .Exit_MAIN:
   rts
 
@@ -63,6 +73,9 @@ M_IMAGE:
 
 P_IMAGE:
   !byte 0
+
+FLAG_MASK:
+  !byte %0000001
 
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_BLACK, VIC_YELLOW, VIC_LIGHT_GREY, VIC_BLACK
@@ -76,7 +89,7 @@ MOCK_SCREEN:
   !text 3,28,ECM_BG2,"UNS",0
   !text 3,35,ECM_BG2,"NVZC",0
   !text 4,7,ECM_BG2,"A:",ECM_BG0,0
-  !text 5,7,ECM_BG3,"M:",ECM_BG0,0
+  !text 5,7,ECM_BG2,"M:",ECM_BG0,0
   !text $FF,$FF
 
 ; Install VIC-II macros

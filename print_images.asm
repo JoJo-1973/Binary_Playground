@@ -84,3 +84,88 @@ PRINT_SIGNED:
 
 .Exit_PRINT_SIGNED:
   jmp PRINT_UNSIGNED
+
+; Print flags, but only the selected ones
+!zone Print_Flags
+PRINT_FLAGS:
+  ldy #"-"                      ; If a flag's status is unaffected print "-", otherwise print "1" or "0".
+  ldx #VIC_BG0                  ; By default, flag info is printed with back ground color BGCOL0.
+  stx __BGCOL
+
+.Test_N:
+  lda #%10000000                ; Check if N must be printed:
+  bit FLAG_MASK                 ; FLAG_MASK has its bits set if the corresponding flag must be printed.
+  beq .Print_N                  ; If FLAG_MASK's bit #7 is off, go to print "-"
+
+  ldy #"0"                      ; Prepare .Y with ASCII code of "0"
+  bit P_IMAGE                   ; and test N.
+  beq .Set_N_Color              ; If N is clear, change the printing color and print it
+  iny                           ; otherwise change the ASCII code in .Y to "1"'s.
+
+.Set_N_Color:
+  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  stx __BGCOL
+
+.Print_N:
+  jsr .Print_Flag_Char
+
+.Test_V:
+  lda #%01000000                ; Check if V must be printed:
+  bit FLAG_MASK
+  beq .Print_V                  ; If FLAG_MASK's bit #6 is off, go to print "-"
+
+  ldy #"0"                      ; Prepare .Y with ASCII code of "0"
+  bit P_IMAGE                   ; and test V.
+  beq .Set_V_Color              ; If V is clear, change the printing color and print it
+  iny                           ; otherwise change the ASCII code in .Y to "1"'s.
+
+.Set_V_Color:
+  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  stx __BGCOL
+
+.Print_V:
+  jsr .Print_Flag_Char
+
+.Test_Z:
+  lda #%00000010                ; Check if Z must be printed:
+  bit FLAG_MASK
+  beq .Print_Z                  ; If FLAG_MASK's bit #1 is off, go to print "-"
+
+  ldy #"0"                      ; Prepare .Y with ASCII code of "0"
+  bit P_IMAGE                   ; and test Z.
+  beq .Set_Z_Color              ; If Z is clear, change the printing color and print it
+  iny                           ; otherwise change the ASCII code in .Y to "1"'s.
+
+.Set_Z_Color:
+  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  stx __BGCOL
+
+.Print_Z:
+  jsr .Print_Flag_Char
+
+.Test_C:
+  lda #%00000001                ; Check if C must be printed:
+  bit FLAG_MASK
+  beq .Print_C                  ; If FLAG_MASK's bit #0 is off, go to print "-"
+
+  ldy #"0"                      ; Prepare .Y with ASCII code of "0"
+  bit P_IMAGE                   ; and test C.
+  beq .Set_C_Color              ; If C is clear, change the printing color and print it
+  iny                           ; otherwise change the ASCII code in .Y to "1"'s.
+
+.Set_C_Color:
+  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  stx __BGCOL
+
+.Print_C:
+.Print_Flag_Char:
+  tya                           ; Copy .Y to .A and print the character
+  jsr __PUTCHAR
+
+  ldy #"-"                      ; then restore .X and .Y for the next flag.
+  ldx #VIC_BG0
+  stx __BGCOL
+
+.Exit_Print_Flag_Char:
+  rts
+!zone
