@@ -27,22 +27,22 @@ MAIN:
   bcc .Loop_Print_Screen
 
   +At 4,10
-  lda #%10001000
+  lda #%10101011
   sta A_IMAGE
   jsr PRINT_BINARY
 
   +At 5,10
-  lda #%10000000
+  lda #%00000001
   sta M_IMAGE
   jsr PRINT_BINARY
 
   +At 4,22
   lda A_IMAGE
-  jsr PRINT_SIGNED
+  jsr PRINT_HEX
 
   +At 5,22
   lda M_IMAGE
-  jsr PRINT_SIGNED
+  jsr PRINT_HEX
 
   +At 4,28
   lda A_IMAGE
@@ -53,16 +53,25 @@ MAIN:
   jsr PRINT_UNSIGNED
 
   +At 4,35
-  lda #%10000010
-  sta P_IMAGE
+  lda A_IMAGE
+  jsr SAVE_FLAGS
   jsr PRINT_FLAGS
 
   +At 5,35
-  lda #%01000001
-  sta P_IMAGE
+  lda M_IMAGE
+  jsr SAVE_FLAGS
   jsr PRINT_FLAGS
 
 .Exit_MAIN:
+  rts
+
+; Save contents of .P in P_IMAGE
+SAVE_FLAGS:
+  php
+  pla
+  sta P_IMAGE
+
+.Exit_SAVE_FLAGS:
   rts
 
 A_IMAGE:
@@ -75,7 +84,7 @@ P_IMAGE:
   !byte 0
 
 FLAG_MASK:
-  !byte %0000001
+  !byte %10000010
 
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_BLACK, VIC_YELLOW, VIC_LIGHT_GREY, VIC_BLACK
@@ -94,6 +103,8 @@ MOCK_SCREEN:
 
 ; Install VIC-II macros
   +Vic_Palette
+  +Compute_Cell
+  +Get_Screen_Cell
 
 ; Install print macros
   +Put_ECM_Char

@@ -1,4 +1,4 @@
-; Output routines to print contents of A, M and P
+; Output routines to print contents of .A, Memory and .P
 
 ; Print .A in binary format
 !zone Print_Binary
@@ -27,6 +27,38 @@ PRINT_BINARY:
 
 .Exit_PRINT_BINARY:
   rts
+!zone
+
+; Print .A in hexadecimal format
+!zone Print_Hex
+PRINT_HEX:
+  pha                           ; Save .A on the stack.
+
+  lda #"$"
+  jsr __PUTCHAR
+
+  pla                           ; Restore .A and copy to .X.
+  tax
+
+  lsr a                         ; Print upper nibble.
+  lsr a
+  lsr a
+  lsr a
+  tay
+  lda .HEX_DIGITS,y
+  jsr __PUTCHAR
+
+  txa                           ; Print lower nibble.
+  and #%00001111
+  tay
+  lda .HEX_DIGITS,y
+  jsr __PUTCHAR
+
+.Exit_PRINT_HEX:
+  rts
+
+.HEX_DIGITS:
+  !text "0123456789ABCDEF"
 !zone
 
 ; Print .A in unsigned decimal format
