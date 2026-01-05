@@ -61,6 +61,38 @@ PRINT_HEX:
   !text "0123456789ABCDEF"
 !zone
 
+; Print .A in Binary Coded Decimal format
+!zone Print_BCD
+PRINT_BCD:
+  pha                           ; Save .A on the stack.
+
+  lda #"$"
+  jsr __PUTCHAR
+
+  pla                           ; Restore .A and copy to .X.
+  tax
+
+  lsr a                         ; Print upper nibble.
+  lsr a
+  lsr a
+  lsr a
+  tay
+  lda .BCD_DIGITS,y
+  jsr __PUTCHAR
+
+  txa                           ; Print lower nibble.
+  and #%00001111
+  tay
+  lda .BCD_DIGITS,y
+  jsr __PUTCHAR
+
+.Exit_PRINT_BCD:
+  rts
+
+.BCD_DIGITS:
+  !text "0123456789??????"
+!zone
+
 ; Print .A in unsigned decimal format
 !zone Print_Unsigned
 PRINT_UNSIGNED:

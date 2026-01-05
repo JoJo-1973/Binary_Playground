@@ -16,51 +16,10 @@ MAIN:
   jsr VIC_PALETTE
   +VIC_Ext_Color_On
 
-  lda #<MOCK_SCREEN
-  sta ZP_1
-  lda #>MOCK_SCREEN
-  sta ZP_1+1
+  jsr PRINT_SCREEN
 
-.Loop_Print_Screen:
-  lda #ZP_1
-  jsr PRINT_MSG
-  bcc .Loop_Print_Screen
-
-  +At 4,10
-  lda #%10101011
-  sta A_IMAGE
-  jsr PRINT_BINARY
-
-  +At 5,10
-  lda #%00000001
-  sta M_IMAGE
-  jsr PRINT_BINARY
-
-  +At 4,22
-  lda A_IMAGE
-  jsr PRINT_HEX
-
-  +At 5,22
-  lda M_IMAGE
-  jsr PRINT_HEX
-
-  +At 4,28
-  lda A_IMAGE
-  jsr PRINT_UNSIGNED
-
-  +At 5,28
-  lda M_IMAGE
-  jsr PRINT_UNSIGNED
-
-  +At 4,35
-  lda A_IMAGE
-  jsr SAVE_FLAGS
-  jsr PRINT_FLAGS
-
-  +At 5,35
-  lda M_IMAGE
-  jsr SAVE_FLAGS
-  jsr PRINT_FLAGS
+- jsr GETIN
+  beq -
 
 .Exit_MAIN:
   rts
@@ -74,32 +33,30 @@ SAVE_FLAGS:
 .Exit_SAVE_FLAGS:
   rts
 
+; Global variables
 A_IMAGE:
   !byte 0
 
 M_IMAGE:
   !byte 0
 
+CARRY_IMAGE:
+  !byte 0
+
 P_IMAGE:
   !byte 0
 
+P_IMAGE_2:
+  !byte 0
+
 FLAG_MASK:
-  !byte %10000010
+  !byte 0
+
+CURR_SCREEN:
+  !byte 4
 
 PALETTE:
-  !byte VIC_BLACK, VIC_GREEN, VIC_BLACK, VIC_YELLOW, VIC_LIGHT_GREY, VIC_BLACK
-
-MOCK_SCREEN:
-  !text 0,10,ECM_BG3," BINARY  PLAYGROUND ",0
-  !text 1,8,ECM_BG0,"PRESS ",ECM_BG2,"?",ECM_BG0," FOR INSTRUCTIONS",0
-  !text 3,10,ECM_BG2,"7654",0
-  !text 3,15,ECM_BG2,"3210",0
-  !text 3,23,ECM_BG2,"SIG",0
-  !text 3,28,ECM_BG2,"UNS",0
-  !text 3,35,ECM_BG2,"NVZC",0
-  !text 4,7,ECM_BG2,"A:",ECM_BG0,0
-  !text 5,7,ECM_BG2,"M:",ECM_BG0,0
-  !text $FF,$FF
+  !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_BLACK
 
 ; Install VIC-II macros
   +Vic_Palette
@@ -116,3 +73,5 @@ __PUTCHAR         = PUT_ECM_CHAR
   +Print_Imm
 
 !source "print_images.asm"
+!source "draw_screen.asm"
+!source "screen_layouts.asm"
