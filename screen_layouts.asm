@@ -22,15 +22,6 @@ SCREEN_HEADER:
   !text 3,35,ECM_BG2,"NVZC",0
   !text $FF,$FF
 
-; Screen titles
-SCREEN_TITLES:
-  !text 1,16,ECM_BG3,5," INCREMENT & DECREMENT ",144,0
-  !text 1,18,ECM_BG3,5," TESTS & COMPARISONS ",144,0
-  !text 1,20,ECM_BG3,5," BOOLEAN OPERATORS ",144,0
-  !text 1,23,ECM_BG3,5," SHIFT & ROTATE ",144,0
-  !text 1,27,ECM_BG3,5," ARITHMETIC ",144,0
-  !text $FF,$FF
-
 ; Screen layouts
 SCR_LAYOUT_1:
   !byte $FF                     ; Is accumulator row active? $FF = No, others = Row #.

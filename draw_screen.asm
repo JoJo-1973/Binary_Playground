@@ -23,14 +23,6 @@ PRINT_SCREEN_HEADER:
   adc #"1"
   jsr __PUTCHAR
 
-  ;lda #<SCREEN_TITLES           ; Print screen title.
-  ;sta ZP_1
-  ;lda #>SCREEN_TITLES
-  ;sta ZP_1+1
-  ;lda #ZP_1
-  ;ldy CURR_SCREEN
-  ;jsr PRINT_NTH
-
 .Exit_PRINT_SCREEN_HEADER:
   rts
 !zone
