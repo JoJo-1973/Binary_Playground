@@ -33,8 +33,8 @@ SCREEN_TITLES:
 
 ; Screen layouts
 SCR_LAYOUT_1:
-  !byte $05                     ; Is accumulator row active? $FF = No, others = Row #.
-  !byte $FF                     ; Is memory row active? $FF = No, others = Row #.
+  !byte $FF                     ; Is accumulator row active? $FF = No, others = Row #.
+  !byte $05                     ; Is memory row active? $FF = No, others = Row #.
   !byte %10000010               ; Flag mask for accumulator / memory contents.
   !byte %10000010               ; Flag mask for result #1.
   !byte %10000010               ; Flag mask for result #2.
@@ -42,7 +42,8 @@ SCR_LAYOUT_1:
   !byte %11000011               ; Flag mask for result #4.
   !byte $00                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
 
-  !text 5,6,ECM_BG2,"A:",ECM_BG0,0
+  !text 1,16,ECM_BG3,5," INCREMENT & DECREMENT ",144,0
+  !text 5,6,ECM_BG2,"M:",ECM_BG0,0
   !text 9,1,ECM_BG1," INCREMENT ",0
   !text 11,4,ECM_BG2,"INC:",0
   !text 14,1,ECM_BG1," DECREMENT ",0
@@ -59,7 +60,7 @@ SCR_LAYOUT_2:
   !byte %11000011               ; Flag mask for result #4.
   !byte $FF                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
 
-
+  !text 1,18,ECM_BG3,5," TESTS & COMPARISONS ",144,0
   !text 5,6,ECM_BG2,"A:",ECM_BG0,0
   !text 6,6,ECM_BG2,"M:",ECM_BG0,0
   !text 8,30,ECM_BG2,"CARRY:",0
@@ -81,6 +82,7 @@ SCR_LAYOUT_3:
   !byte %10000010               ; Flag mask for result #4.
   !byte $00                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
 
+  !text 1,20,ECM_BG3,5," BOOLEAN OPERATORS ",144,0
   !text 5,6,ECM_BG2,"A:",ECM_BG0,0
   !text 6,6,ECM_BG2,"M:",ECM_BG0,0
   !text 10,1,ECM_BG1," BIT-WISE AND ",0
@@ -101,6 +103,7 @@ SCR_LAYOUT_4:
   !byte %10000011               ; Flag mask for result #4.
   !byte $FF                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
 
+  !text 1,23,ECM_BG3,5," SHIFT & ROTATE ",144,0
   !text 4,6,ECM_BG2,"A:",ECM_BG0,0
   !text 5,1,ECM_BG1," SHIFT LEFT ",0
   !text 5,30,ECM_BG2,"CARRY:",0
@@ -136,6 +139,7 @@ SCR_LAYOUT_5:
   !byte $FF                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
 
 
+  !text 1,27,ECM_BG3,5," ARITHMETIC ",144,0
   !text 5,6,ECM_BG2,"A:",ECM_BG0,0
   !text 6,6,ECM_BG2,"M:",ECM_BG0,0
   !text 8,30,ECM_BG2,"CARRY:",0
