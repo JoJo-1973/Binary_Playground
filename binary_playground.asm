@@ -16,7 +16,11 @@ MAIN:
   jsr VIC_PALETTE
   +VIC_Ext_Color_On
 
-  jsr PRINT_SCREEN
+  jsr PRINT_PAGE
+  lda #VIC_BG0
+  sta __BGCOL
+  jsr PRINT_A
+  jsr PRINT_M
 
 - jsr GETIN
   beq -
@@ -35,25 +39,22 @@ SAVE_FLAGS:
 
 ; Global variables
 A_IMAGE:
-  !byte 0
+  !byte %00000000
 
 M_IMAGE:
+  !byte %11111111
+
+P_IMAGE:
   !byte 0
 
 CARRY_IMAGE:
   !byte 0
 
-P_IMAGE:
-  !byte 0
-
-P_IMAGE_2:
-  !byte 0
-
 FLAG_MASK:
   !byte 0
 
-CURR_SCREEN:
-  !byte 0
+CURR_PAGE:
+  !byte 4
 
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_BLACK

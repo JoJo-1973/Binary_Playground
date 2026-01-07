@@ -1,15 +1,34 @@
-; Screen layouts data
+; Page layouts data structure
 
-; Screen layouts table
-SCREEN_LAYOUTS:
-  !word SCR_LAYOUT_1
-  !word SCR_LAYOUT_2
-  !word SCR_LAYOUT_3
-  !word SCR_LAYOUT_4
-  !word SCR_LAYOUT_5
+; Return in .A item from layout
+; Layout number is in .A, offset into structure is in .Y.
+; At exit ZP_1 points to offset 0 of the selected layout.
+!zone Get_Item
+GET_ITEM:
+  asl a                         ; Turn .A into index.
+  tax
 
-; Common header for all screens
-SCREEN_HEADER:
+  lda PAGE_LAYOUTS,x            ; Point ZP_1 to address of the layout structure.
+  sta ZP_1
+  lda PAGE_LAYOUTS+1,x
+  sta ZP_1+1
+
+  lda (ZP_1),y                  ; Return item from structure.
+
+.Exit_GET_ITEM:
+  rts
+!zone
+
+; Page layouts table
+PAGE_LAYOUTS:
+  !word PAGE_LAYOUT_1
+  !word PAGE_LAYOUT_2
+  !word PAGE_LAYOUT_3
+  !word PAGE_LAYOUT_4
+  !word PAGE_LAYOUT_5
+
+; Common header for all pages
+PAGE_HEADER:
   !text 0,1,ECM_BG1," BINARY PLAYGROUND ",0
   !text 0,29,ECM_BG2,"?",ECM_BG0," FOR HELP",0
   !text 1,1,ECM_BG2,"PAGE #",0
@@ -22,16 +41,17 @@ SCREEN_HEADER:
   !text 3,35,ECM_BG2,"NVZC",0
   !text $FF,$FF
 
-; Screen layouts
-SCR_LAYOUT_1:
-  !byte $FF                     ; Is accumulator row active? $FF = No, others = Row #.
-  !byte $05                     ; Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ; Flag mask for accumulator / memory contents.
-  !byte %10000010               ; Flag mask for result #1.
-  !byte %10000010               ; Flag mask for result #2.
-  !byte %10000010               ; Flag mask for result #3.
-  !byte %11000011               ; Flag mask for result #4.
-  !byte $00                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
+; Page layouts
+PAGE_LAYOUT_1:
+  !byte $FF                     ;  0: Is accumulator row active? $FF = No, others = Row #.
+  !byte $05                     ;  1: Is memory row active? $FF = No, others = Row #.
+  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
+  !byte %10000010               ;  3: Flag mask for result #1.
+  !byte %10000010               ;  4: Flag mask for result #2.
+  !byte %10000010               ;  5: Flag mask for result #3.
+  !byte %11000011               ;  6: Flag mask for result #4.
+  !byte $FF                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
+  !word REDRAW_1                ;  8: Address of screen redraw routine.
 
   !text 1,16,ECM_BG3,5," INCREMENT & DECREMENT ",144,0
   !text 5,6,ECM_BG2,"M:",ECM_BG0,0
@@ -41,20 +61,21 @@ SCR_LAYOUT_1:
   !text 16,4,ECM_BG2,"DEC:",0
   !text $FF,$FF
 
-SCR_LAYOUT_2:
-  !byte $05                     ; Is accumulator row active? $FF = No, others = Row #.
-  !byte $06                     ; Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ; Flag mask for accumulator / memory contents.
-  !byte %10000011               ; Flag mask for result #1.
-  !byte %11000011               ; Flag mask for result #2.
-  !byte %11000010               ; Flag mask for result #3.
-  !byte %11000011               ; Flag mask for result #4.
-  !byte $FF                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
+PAGE_LAYOUT_2:
+  !byte $05                     ;  0: Is accumulator row active? $FF = No, others = Row #.
+  !byte $06                     ;  1: Is memory row active? $FF = No, others = Row #.
+  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
+  !byte %10000011               ;  3: Flag mask for result #1.
+  !byte %11000011               ;  4: Flag mask for result #2.
+  !byte %11000010               ;  5: Flag mask for result #3.
+  !byte %11000011               ;  6: Flag mask for result #4.
+  !byte $08                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
+  !word REDRAW_2                ;  8: Address of screen redraw routine.
 
   !text 1,18,ECM_BG3,5," TESTS & COMPARISONS ",144,0
   !text 5,6,ECM_BG2,"A:",ECM_BG0,0
   !text 6,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 8,30,ECM_BG2,"CARRY:",0
+  !text 8,21,ECM_BG2,"CARRY BEFORE OP:",0
   !text 10,1,ECM_BG1," UNSIGNED COMPARISON ",0
   !text 12,4,ECM_BG2,"CMP:",0
   !text 15,1,ECM_BG1," SIGNED COMPARISON ",0
@@ -63,41 +84,43 @@ SCR_LAYOUT_2:
   !text 22,4,ECM_BG2,"BIT:",0
   !text $FF,$FF
 
-SCR_LAYOUT_3:
-  !byte $05                     ; Is accumulator row active? $FF = No, others = Row #.
-  !byte $06                     ; Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ; Flag mask for accumulator / memory contents.
-  !byte %10000010               ; Flag mask for result #1.
-  !byte %10000010               ; Flag mask for result #2.
-  !byte %10000010               ; Flag mask for result #3.
-  !byte %10000010               ; Flag mask for result #4.
-  !byte $00                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
+PAGE_LAYOUT_3:
+  !byte $05                     ;  0: Is accumulator row active? $FF = No, others = Row #.
+  !byte $06                     ;  1: Is memory row active? $FF = No, others = Row #.
+  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
+  !byte %10000010               ;  3: Flag mask for result #1.
+  !byte %10000010               ;  4: Flag mask for result #2.
+  !byte %10000010               ;  5: Flag mask for result #3.
+  !byte %10000010               ;  6: Flag mask for result #4.
+  !byte $FF                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
+  !word REDRAW_3                ;  8: Address of screen redraw routine.
 
   !text 1,20,ECM_BG3,5," BOOLEAN OPERATORS ",144,0
   !text 5,6,ECM_BG2,"A:",ECM_BG0,0
   !text 6,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 10,1,ECM_BG1," BIT-WISE AND ",0
+  !text 10,1,ECM_BG1," BITWISE AND ",0
   !text 12,4,ECM_BG2,"AND:",0
-  !text 15,1,ECM_BG1," BIT-WISE OR ",0
+  !text 15,1,ECM_BG1," BITWISE OR ",0
   !text 17,4,ECM_BG2,"ORA:",0
-  !text 20,1,ECM_BG1," BIT-WISE EXCLUSIVE OR ",0
+  !text 20,1,ECM_BG1," BITWISE EXCLUSIVE OR ",0
   !text 22,4,ECM_BG2,"EOR:",0
   !text $FF,$FF
 
-SCR_LAYOUT_4:
-  !byte $04                     ; Is accumulator row active? $FF = No, others = Row #.
-  !byte $FF                     ; Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ; Flag mask for accumulator / memory contents.
-  !byte %10000011               ; Flag mask for result #1.
-  !byte %10000011               ; Flag mask for result #2.
-  !byte %10000011               ; Flag mask for result #3.
-  !byte %10000011               ; Flag mask for result #4.
-  !byte $FF                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
+PAGE_LAYOUT_4:
+  !byte $04                     ;  0: Is accumulator row active? $FF = No, others = Row #.
+  !byte $FF                     ;  1: Is memory row active? $FF = No, others = Row #.
+  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
+  !byte %10000011               ;  3: Flag mask for result #1.
+  !byte %10000011               ;  4: Flag mask for result #2.
+  !byte %10000011               ;  5: Flag mask for result #3.
+  !byte %10000011               ;  6: Flag mask for result #4.
+  !byte $05                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
+  !word REDRAW_4                ;  8: Address of screen redraw routine.
 
   !text 1,23,ECM_BG3,5," SHIFT & ROTATE ",144,0
   !text 4,6,ECM_BG2,"A:",ECM_BG0,0
   !text 5,1,ECM_BG1," SHIFT LEFT ",0
-  !text 5,30,ECM_BG2,"CARRY:",0
+  !text 5,21,ECM_BG2,"CARRY BEFORE OP:",0
   !text 6,3,ECM_BG2,"ASL1:",0
   !text 7,3,ECM_BG2,"ASL2:",0
   !text 8,3,ECM_BG2,"ASL3:",0
@@ -119,25 +142,32 @@ SCR_LAYOUT_4:
   !text 24,3,ECM_BG2,"ROR4:",0
   !text $FF,$FF
 
-SCR_LAYOUT_5:
-  !byte $05                     ; Is accumulator row active? $FF = No, others = Row #.
-  !byte $06                     ; Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ; Flag mask for accumulator / memory contents.
-  !byte %11000011               ; Flag mask for result #1.
-  !byte %11000011               ; Flag mask for result #2.
-  !byte %11000011               ; Flag mask for result #3.
-  !byte %11000011               ; Flag mask for result #4.
-  !byte $FF                     ; Can Carry flag be modified before operation? $FF = Yes, $00 = No.
-
+PAGE_LAYOUT_5:
+  !byte $05                     ;  0: Is accumulator row active? $FF = No, others = Row #.
+  !byte $06                     ;  1: Is memory row active? $FF = No, others = Row #.
+  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
+  !byte %11000011               ;  3: Flag mask for result #1.
+  !byte %11000011               ;  4: Flag mask for result #2.
+  !byte %11000011               ;  5: Flag mask for result #3.
+  !byte %11000011               ;  6: Flag mask for result #4.
+  !byte $08                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
+  !word REDRAW_5                ;  8: Address of page redraw routine.
 
   !text 1,27,ECM_BG3,5," ARITHMETIC ",144,0
   !text 5,6,ECM_BG2,"A:",ECM_BG0,0
   !text 6,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 8,30,ECM_BG2,"CARRY:",0
+  !text 8,21,ECM_BG2,"CARRY BEFORE OP:",0
   !text 10,1,ECM_BG1," BINARY ARITHMETIC ",0
   !text 12,4,ECM_BG2,"ADC:",0
-  !text 14,4,ECM_BG2,"SBC:",0
-  !text 17,1,ECM_BG1," BINARY CODED DECIMAL ARITHMETIC ",0
+  !text 13,4,ECM_BG2,"SBC:",0
+  !text 16,1,ECM_BG1," BINARY CODED DECIMAL ARITHMETIC ",0
+  !text 18,20,ECM_BG2,"BCD",0
   !text 19,4,ECM_BG2,"ADC:",0
-  !text 21,4,ECM_BG2,"SBC:",0
+  !text 20,4,ECM_BG2,"SBC:",0
   !text $FF,$FF
+
+REDRAW_1:
+REDRAW_2:
+REDRAW_3:
+REDRAW_4:
+REDRAW_5:

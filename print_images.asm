@@ -167,7 +167,7 @@ PRINT_FLAGS:
   iny                           ; otherwise change the ASCII code in .Y to "1"'s.
 
 .Set_N_Color:
-  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  ldx #VIC_BG1                  ; Active flags are printed in BGCOL1 background color.
   stx __BGCOL
 
 .Print_N:
@@ -184,7 +184,7 @@ PRINT_FLAGS:
   iny                           ; otherwise change the ASCII code in .Y to "1"'s.
 
 .Set_V_Color:
-  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  ldx #VIC_BG1                  ; Active flags are printed in BGCOL1 background color.
   stx __BGCOL
 
 .Print_V:
@@ -201,7 +201,7 @@ PRINT_FLAGS:
   iny                           ; otherwise change the ASCII code in .Y to "1"'s.
 
 .Set_Z_Color:
-  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  ldx #VIC_BG1                  ; Active flags are printed in BGCOL1 background color.
   stx __BGCOL
 
 .Print_Z:
@@ -218,7 +218,7 @@ PRINT_FLAGS:
   iny                           ; otherwise change the ASCII code in .Y to "1"'s.
 
 .Set_C_Color:
-  ldx #VIC_BG3                  ; Active flags are printed in BGCOL3 background color.
+  ldx #VIC_BG1                  ; Active flags are printed in BGCOL1 background color.
   stx __BGCOL
 
 .Print_C:
