@@ -167,7 +167,47 @@ PAGE_LAYOUT_5:
   !text $FF,$FF
 
 REDRAW_1:
+  jsr TEST_INC
+  jsr PRINT_RES
+
+  jsr TEST_DEC
+  jsr PRINT_RES
+
+.Exit_REDRAW_1:
+  rts
+
 REDRAW_2:
+  jsr TEST_CMP
+  jsr PRINT_RES
+
+  jsr TEST_SBC
+  jsr PRINT_RES
+
+  jsr TEST_BIT
+  jsr PRINT_RES
+
+.Exit_REDRAW_2:
+  rts
+
 REDRAW_3:
+  jsr TEST_AND
+  jsr PRINT_RES
+
+  jsr TEST_ORA
+  jsr PRINT_RES
+
+  jsr TEST_EOR
+  jsr PRINT_RES
+
+.Exit_REDRAW_3:
+  rts
+
 REDRAW_4:
+
+.Exit_REDRAW_4:
+  rts
+
 REDRAW_5:
+
+.Exit_REDRAW_5:
+  rts

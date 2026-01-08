@@ -1,5 +1,24 @@
 ; Output routines to print contents of .A, Memory and .P
 
+; Print Carry flag
+!zone Print_Carry
+PRINT_CARRY:
+  lda CURR_PAGE                 ; Retrieve the row where the Carry status must be printed.
+  ldy #7
+  jsr GET_ITEM
+
+  tax                           ; Locate the cursor.
+  ldy #38
+  clc
+  jsr PLOT
+
+  lda #"0"                      ; Compute Carry character and print it.
+  adc CARRY_IMAGE
+  jsr __PUTCHAR
+
+.Exit_PRINT_CARRY:
+  rts
+
 ; Print .A in binary format
 !zone Print_Binary
 PRINT_BINARY:

@@ -21,6 +21,9 @@ MAIN:
   sta __BGCOL
   jsr PRINT_A
   jsr PRINT_M
+  jsr PRINT_CARRY
+
+  jsr REDRAW_2
 
 - jsr GETIN
   beq -
@@ -28,33 +31,27 @@ MAIN:
 .Exit_MAIN:
   rts
 
-; Save contents of .P in P_IMAGE
-SAVE_FLAGS:
-  php
-  pla
-  sta P_IMAGE
-
-.Exit_SAVE_FLAGS:
-  rts
-
 ; Global variables
 A_IMAGE:
-  !byte %00000000
+  !byte %10000000
 
 M_IMAGE:
-  !byte %11111111
+  !byte %10000000
 
 P_IMAGE:
   !byte 0
 
-CARRY_IMAGE:
+RES_IMAGE:
   !byte 0
+
+CARRY_IMAGE:
+  !byte 1
 
 FLAG_MASK:
   !byte 0
 
 CURR_PAGE:
-  !byte 4
+  !byte 1
 
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_BLACK
@@ -76,3 +73,4 @@ __PUTCHAR         = PUT_ECM_CHAR
 !source "print_images.asm"
 !source "draw_screen.asm"
 !source "screen_layouts.asm"
+!source "opcode_tests.asm"

@@ -110,10 +110,18 @@ PRINT_M:
   rts
 !zone
 
+; Print generic result indexed by .A
+!zone Print_Res
+PRINT_RES:
+  lda RES_IMAGE
+  pha
+!zone
+
 !zone Print_Line
 PRINT_LINE:
   stx ._ROW
   ldy #9
+  clc
   jsr PLOT
 
   pla                           ; Print the byte in binary format.
@@ -122,6 +130,7 @@ PRINT_LINE:
 
   ldx ._ROW                     ; Print byte in hexadecimal format.
   ldy #20
+  clc
   jsr PLOT
   pla
   pha
@@ -129,6 +138,7 @@ PRINT_LINE:
 
   ldx ._ROW                     ; Print byte in unsigned decimal format.
   ldy #25
+  clc
   jsr PLOT
   pla
   pha
@@ -136,6 +146,7 @@ PRINT_LINE:
 
   ldx ._ROW                     ; Print byte in signed decimal format.
   ldy #29
+  clc
   jsr PLOT
   pla
   pha
@@ -143,6 +154,7 @@ PRINT_LINE:
 
   ldx ._ROW                     ; Print flags.
   ldy #35
+  clc
   jsr PLOT
   lda P_IMAGE
   jsr PRINT_FLAGS
