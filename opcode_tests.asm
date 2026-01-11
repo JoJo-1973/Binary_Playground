@@ -268,3 +268,379 @@ TEST_SBC_BCD:
 .Exit_TEST_SBC_BCD:
   rts
 !zone
+
+!zone Test_ASL1
+TEST_ASL1:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  asl a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #6                        ; Row location.
+
+.Exit_TEST_ASL1:
+  rts
+!zone
+
+!zone Test_ASL2
+TEST_ASL2:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  asl a
+  asl a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #7                        ; Row location.
+
+.Exit_TEST_ASL2:
+  rts
+!zone
+
+!zone Test_ASL3
+TEST_ASL3:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  asl a
+  asl a
+  asl a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #8                        ; Row location.
+
+.Exit_TEST_ASL3:
+  rts
+!zone
+
+!zone Test_ASL4
+TEST_ASL4:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  asl a
+  asl a
+  asl a
+  asl a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #9                        ; Row location.
+
+.Exit_TEST_ASL4:
+  rts
+!zone
+
+!zone Test_LSR1
+TEST_LSR1:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  lsr a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #11                        ; Row location.
+
+.Exit_TEST_LSR1:
+  rts
+!zone
+
+!zone Test_LSR2
+TEST_LSR2:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  lsr a
+  lsr a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #12                        ; Row location.
+
+.Exit_TEST_LSR2:
+  rts
+!zone
+
+!zone Test_LSR3
+TEST_LSR3:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  lsr a
+  lsr a
+  lsr a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #13                        ; Row location.
+
+.Exit_TEST_LSR3:
+  rts
+!zone
+
+!zone Test_LSR4
+TEST_LSR4:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  lsr a
+  lsr a
+  lsr a
+  lsr a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #14                        ; Row location.
+
+.Exit_TEST_LSR4:
+  rts
+!zone
+
+!zone Test_ROL1
+TEST_ROL1:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  rol a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #16                        ; Row location.
+
+.Exit_TEST_ROL1:
+  rts
+!zone
+
+!zone Test_ROL2
+TEST_ROL2:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  rol a
+  rol a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #17                        ; Row location.
+
+.Exit_TEST_ROL2:
+  rts
+!zone
+
+!zone Test_ROL3
+TEST_ROL3:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  rol a
+  rol a
+  rol a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #18                        ; Row location.
+
+.Exit_TEST_ROL3:
+  rts
+!zone
+
+!zone Test_ROL4
+TEST_ROL4:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  rol a
+  rol a
+  rol a
+  rol a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #19                        ; Row location.
+
+.Exit_TEST_ROL4:
+  rts
+!zone
+
+!zone Test_ROR1
+TEST_ROR1:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  ror a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #21                        ; Row location.
+
+.Exit_TEST_ROR1:
+  rts
+!zone
+
+!zone Test_ROR2
+TEST_ROR2:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  ror a
+  ror a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #22                        ; Row location.
+
+.Exit_TEST_ROR2:
+  rts
+!zone
+
+!zone Test_ROR3
+TEST_ROR3:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  ror a
+  ror a
+  ror a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #23                        ; Row location.
+
+.Exit_TEST_ROR3:
+  rts
+!zone
+
+!zone Test_ROR4
+TEST_ROR4:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  ror a
+  ror a
+  ror a
+  ror a
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%10000011                ; Only N, Z and C matter.
+  sta FLAG_MASK
+
+  ldx #24                        ; Row location.
+
+.Exit_TEST_ROR4:
+  rts
+!zone

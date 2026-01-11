@@ -203,6 +203,53 @@ REDRAW_3:
   rts
 
 REDRAW_4:
+  jsr TEST_ASL1
+  jsr PRINT_RES
+
+  jsr TEST_ASL2
+  jsr PRINT_RES
+
+  jsr TEST_ASL3
+  jsr PRINT_RES
+
+  jsr TEST_ASL4
+  jsr PRINT_RES
+
+  jsr TEST_LSR1
+  jsr PRINT_RES
+
+  jsr TEST_LSR2
+  jsr PRINT_RES
+
+  jsr TEST_LSR3
+  jsr PRINT_RES
+
+  jsr TEST_LSR4
+  jsr PRINT_RES
+
+  jsr TEST_ROL1
+  jsr PRINT_RES
+
+  jsr TEST_ROL2
+  jsr PRINT_RES
+
+  jsr TEST_ROL3
+  jsr PRINT_RES
+
+  jsr TEST_ROL4
+  jsr PRINT_RES
+
+  jsr TEST_ROR1
+  jsr PRINT_RES
+
+  jsr TEST_ROR2
+  jsr PRINT_RES
+
+  jsr TEST_ROR3
+  jsr PRINT_RES
+
+  jsr TEST_ROR4
+  jsr PRINT_RES
 
 .Exit_REDRAW_4:
   rts
