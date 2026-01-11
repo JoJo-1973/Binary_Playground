@@ -134,7 +134,7 @@ PRINT_LINE:
   jsr PLOT
   pla
   pha
-  jsr PRINT_HEX
+  jsr PRINT_HEX_OR_BCD
 
   ldx ._ROW                     ; Print byte in unsigned decimal format.
   ldy #25

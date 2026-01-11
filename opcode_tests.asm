@@ -99,6 +99,7 @@ TEST_SBC:
 
 .Exit_TEST_SBC:
   rts
+!zone
 
 !zone Test_BIT
 TEST_BIT:
@@ -117,6 +118,7 @@ TEST_BIT:
 
 .Exit_TEST_BIT:
   rts
+!zone
 
 !zone Test_AND
 TEST_AND:
@@ -135,6 +137,8 @@ TEST_AND:
 
 .Exit_TEST_AND:
   rts
+!zone
+
 !zone Test_ORA
 TEST_ORA:
   lda A_IMAGE                   ; Test opcode.
@@ -152,6 +156,8 @@ TEST_ORA:
 
 .Exit_TEST_ORA:
   rts
+!zone
+
 !zone Test_EOR
 TEST_EOR:
   lda A_IMAGE                   ; Test opcode.
@@ -169,3 +175,96 @@ TEST_EOR:
 
 .Exit_TEST_EOR:
   rts
+!zone
+
+!zone Test_ADC_Hex
+TEST_ADC_HEX:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  adc M_IMAGE
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%11000011                ; All flags matter.
+  sta FLAG_MASK
+
+  ldx #12                       ; Row location.
+
+.Exit_TEST_ADC_HEX:
+  rts
+!zone
+
+!zone Test_SBC_Hex
+TEST_SBC_HEX:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  lda A_IMAGE                   ; Test opcode.
+  sbc M_IMAGE
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+
+  lda #%11000011                ; All flags matter.
+  sta FLAG_MASK
+
+  ldx #13                       ; Row location.
+
+.Exit_TEST_SBC_HEX:
+  rts
+!zone
+
+!zone Test_ADC_BCD
+TEST_ADC_BCD:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  sed
+  lda A_IMAGE                   ; Test opcode.
+  adc M_IMAGE
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+  cld
+
+  lda #%11000011                ; All flags matter.
+  sta FLAG_MASK
+
+  ldx #19                       ; Row location.
+
+.Exit_TEST_ADC_BCD:
+  rts
+!zone
+
+!zone Test_SBC_BCD
+TEST_SBC_BCD:
+  lda CARRY_IMAGE               ; Set C accordingly.
+  ror a
+
+  sed
+  lda A_IMAGE                   ; Test opcode.
+  sbc M_IMAGE
+  sta RES_IMAGE
+
+  php                           ; Save flags.
+  pla
+  sta P_IMAGE
+  cld
+
+  lda #%11000011                ; All flags matter.
+  sta FLAG_MASK
+
+  ldx #20                       ; Row location.
+
+.Exit_TEST_SBC_BCD:
+  rts
+!zone

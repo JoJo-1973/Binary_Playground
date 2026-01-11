@@ -48,11 +48,28 @@ PRINT_BINARY:
   rts
 !zone
 
-; Print .A in hexadecimal format
-!zone Print_Hex
-PRINT_HEX:
+; Print .A in hexadecimal or BCD format, according to D flag stored in P_IMAGE
+!zone Print_Hex_Or_BCD
+PRINT_HEX_OR_BCD:
   pha                           ; Save .A on the stack.
 
+  lda #%00001000                ; Test D flag:
+  bit P_IMAGE
+  bne .Set_BCD_Digits           ; if D = 1 let ZP_2 point to BCD digits table.
+
+  lda #<.HEX_DIGITS
+  sta ZP_2
+  lda #>.HEX_DIGITS
+  sta ZP_2+1
+  jmp .Print_Dollar
+
+.Set_BCD_Digits:
+  lda #<.BCD_DIGITS
+  sta ZP_2
+  lda #>.BCD_DIGITS
+  sta ZP_2+1
+
+.Print_Dollar:
   lda #"$"
   jsr __PUTCHAR
 
@@ -64,49 +81,20 @@ PRINT_HEX:
   lsr a
   lsr a
   tay
-  lda .HEX_DIGITS,y
+  lda (ZP_2),y
   jsr __PUTCHAR
 
   txa                           ; Print lower nibble.
   and #%00001111
   tay
-  lda .HEX_DIGITS,y
+  lda (ZP_2),y
   jsr __PUTCHAR
 
-.Exit_PRINT_HEX:
+.Exit_PRINT_HEX_OR_BCD:
   rts
 
 .HEX_DIGITS:
   !text "0123456789ABCDEF"
-!zone
-
-; Print .A in Binary Coded Decimal format
-!zone Print_BCD
-PRINT_BCD:
-  pha                           ; Save .A on the stack.
-
-  lda #"$"
-  jsr __PUTCHAR
-
-  pla                           ; Restore .A and copy to .X.
-  tax
-
-  lsr a                         ; Print upper nibble.
-  lsr a
-  lsr a
-  lsr a
-  tay
-  lda .BCD_DIGITS,y
-  jsr __PUTCHAR
-
-  txa                           ; Print lower nibble.
-  and #%00001111
-  tay
-  lda .BCD_DIGITS,y
-  jsr __PUTCHAR
-
-.Exit_PRINT_BCD:
-  rts
 
 .BCD_DIGITS:
   !text "0123456789??????"

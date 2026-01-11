@@ -177,10 +177,14 @@ REDRAW_1:
   rts
 
 REDRAW_2:
+  sed
   jsr TEST_CMP
+  cld
   jsr PRINT_RES
 
+  sed
   jsr TEST_SBC
+  cld
   jsr PRINT_RES
 
   jsr TEST_BIT
@@ -208,6 +212,17 @@ REDRAW_4:
   rts
 
 REDRAW_5:
+  jsr TEST_ADC_HEX
+  jsr PRINT_RES
+
+  jsr TEST_SBC_HEX
+  jsr PRINT_RES
+
+  jsr TEST_ADC_BCD
+  jsr PRINT_RES
+
+  jsr TEST_SBC_BCD
+  jsr PRINT_RES
 
 .Exit_REDRAW_5:
   rts

@@ -23,7 +23,7 @@ MAIN:
   jsr PRINT_M
   jsr PRINT_CARRY
 
-  jsr REDRAW_2
+  jsr REDRAW_5
 
 - jsr GETIN
   beq -
@@ -33,10 +33,10 @@ MAIN:
 
 ; Global variables
 A_IMAGE:
-  !byte %10000000
+  !byte %00010000
 
 M_IMAGE:
-  !byte %10000000
+  !byte %10000001
 
 P_IMAGE:
   !byte 0
@@ -51,7 +51,7 @@ FLAG_MASK:
   !byte 0
 
 CURR_PAGE:
-  !byte 1
+  !byte 4
 
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_BLACK
