@@ -1,25 +1,306 @@
-; Page layouts data structure
+; ==============================================================================
+; FILE:           screen_layouts.asm
+; PROGETTO:       Binary Playground (Binary_Playground.c64)
+; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
+; DESCRIZIONE:    Strutture che descrivono le cinque pagine (dati e etichette),
+;                 l'intestazione comune e le utilità per leggerle e per
+;                 ridisegnare i risultati di ciascuna pagina.
+; CONTENUTO:      GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
+;                 REDRAW_1          Ridisegna i risultati della pagina 1
+;                 REDRAW_2          Ridisegna i risultati della pagina 2
+;                 REDRAW_3          Ridisegna i risultati della pagina 3
+;                 REDRAW_4          Ridisegna i risultati della pagina 4
+;                 REDRAW_5          Ridisegna i risultati della pagina 5
+; DIPENDENZE:     Nessuna
+; REQUISITI ZP:   ZP_1
+; ==============================================================================
 
-; Return in .A item from layout
-; Layout number is in .A, offset into structure is in .Y.
-; At exit ZP_1 points to offset 0 of the selected layout.
-!zone Get_Item
-GET_ITEM:
-  asl a                         ; Turn .A into index.
-  tax
+; ==============================================================================
+; SUBROUTINE: GET_LAYOUT_ITEM
+; ------------------------------------------------------------------------------
+; Descrizione:  Legge il byte di indice .Y della struttura della pagina .A e
+;               lascia ZP_1 puntato all'inizio della struttura.
+;
+; Input:
+;   - .A (1 byte, CPU)   : Numero della pagina (0-4)
+;   - .Y (1 byte, CPU)   : Indice del byte nella struttura
+;
+; Output:
+;   - .A (1 byte, CPU)   : Byte letto
+;   - ZP_1 (2 byte, ZP)  : Indirizzo della struttura della pagina
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .P (Negative, Zero, Carry), ZP_1 (2 byte)
+; Dipendenze Esterne:   <c64/symbols.asm>
+; ==============================================================================
+!zone Get_Layout_Item
 
-  lda PAGE_LAYOUTS,x            ; Point ZP_1 to address of the layout structure.
-  sta ZP_1
-  lda PAGE_LAYOUTS+1,x
-  sta ZP_1+1
+  GET_LAYOUT_ITEM:
+    asl a                       ; Trasforma .A in un indice della tabella.
+    tax
 
-  lda (ZP_1),y                  ; Return item from structure.
+    lda PAGE_LAYOUTS,x          ; Punta ZP_1 alla struttura della pagina.
+    sta ZP_1
+    lda PAGE_LAYOUTS+1,x
+    sta ZP_1+1
 
-.Exit_GET_ITEM:
-  rts
+    lda (ZP_1),y                ; Legge il byte della struttura.
+
+  .Exit_GET_LAYOUT_ITEM:
+    rts
+
 !zone
 
-; Page layouts table
+; ==============================================================================
+; SUBROUTINE: REDRAW_1
+; ------------------------------------------------------------------------------
+; Descrizione:  Esegue i test della pagina 1 (INC e DEC) e stampa il risultato
+;               di ciascuno, con i flag, con PRINT_RES.
+;
+;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
+;               proprie celle di lavoro, il cui contenuto non è garantito dopo
+;               la chiamata.
+;
+; Input:
+;   - _M_IMAGE (1 byte, RAM) : Valore della cella di memoria
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
+; Dipendenze Esterne:   "draw_screen.asm"
+;                       "opcode_tests.asm"
+; ==============================================================================
+!zone Redraw_1
+
+  REDRAW_1:
+    jsr TEST_INC
+    jsr PRINT_RES
+
+    jsr TEST_DEC
+    jsr PRINT_RES
+
+  .Exit_REDRAW_1:
+    rts
+
+!zone
+
+; ==============================================================================
+; SUBROUTINE: REDRAW_2
+; ------------------------------------------------------------------------------
+; Descrizione:  Esegue i test della pagina 2 (CMP, SBC e BIT) e stampa il
+;               risultato di ciascuno, con i flag, con PRINT_RES.
+;
+;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
+;               proprie celle di lavoro, il cui contenuto non è garantito dopo
+;               la chiamata.
+;
+; Input:
+;   - _A_IMAGE (1 byte, RAM)     : Valore di .A
+;   - _M_IMAGE (1 byte, RAM)     : Valore della cella di memoria
+;   - _CARRY_IMAGE (1 byte, RAM) : Valore del flag di Carry (0 o 1)
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
+; Dipendenze Esterne:   "draw_screen.asm"
+;                       "opcode_tests.asm"
+; ==============================================================================
+!zone Redraw_2
+
+  REDRAW_2:
+    jsr TEST_CMP
+    jsr PRINT_RES
+
+    jsr TEST_SBC
+    jsr PRINT_RES
+
+    jsr TEST_BIT
+    jsr PRINT_RES
+
+  .Exit_REDRAW_2:
+    rts
+
+!zone
+
+; ==============================================================================
+; SUBROUTINE: REDRAW_3
+; ------------------------------------------------------------------------------
+; Descrizione:  Esegue i test della pagina 3 (AND, ORA e EOR) e stampa il
+;               risultato di ciascuno, con i flag, con PRINT_RES.
+;
+;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
+;               proprie celle di lavoro, il cui contenuto non è garantito dopo
+;               la chiamata.
+;
+; Input:
+;   - _A_IMAGE (1 byte, RAM) : Valore di .A
+;   - _M_IMAGE (1 byte, RAM) : Valore della cella di memoria
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
+; Dipendenze Esterne:   "draw_screen.asm"
+;                       "opcode_tests.asm"
+; ==============================================================================
+!zone Redraw_3
+
+  REDRAW_3:
+    jsr TEST_AND
+    jsr PRINT_RES
+
+    jsr TEST_ORA
+    jsr PRINT_RES
+
+    jsr TEST_EOR
+    jsr PRINT_RES
+
+  .Exit_REDRAW_3:
+    rts
+
+!zone
+
+; ==============================================================================
+; SUBROUTINE: REDRAW_4
+; ------------------------------------------------------------------------------
+; Descrizione:  Esegue i test della pagina 4 (ASL, LSR, ROL e ROR, ripetute da
+;               una a quattro volte) e stampa il risultato di ciascuno, con i
+;               flag, con PRINT_RES.
+;
+;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
+;               proprie celle di lavoro, il cui contenuto non è garantito dopo
+;               la chiamata.
+;
+; Input:
+;   - _A_IMAGE (1 byte, RAM)     : Valore di .A
+;   - _CARRY_IMAGE (1 byte, RAM) : Valore del flag di Carry (0 o 1)
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
+; Dipendenze Esterne:   "draw_screen.asm"
+;                       "opcode_tests.asm"
+; ==============================================================================
+!zone Redraw_4
+
+  REDRAW_4:
+    jsr TEST_ASL1
+    jsr PRINT_RES
+
+    jsr TEST_ASL2
+    jsr PRINT_RES
+
+    jsr TEST_ASL3
+    jsr PRINT_RES
+
+    jsr TEST_ASL4
+    jsr PRINT_RES
+
+    jsr TEST_LSR1
+    jsr PRINT_RES
+
+    jsr TEST_LSR2
+    jsr PRINT_RES
+
+    jsr TEST_LSR3
+    jsr PRINT_RES
+
+    jsr TEST_LSR4
+    jsr PRINT_RES
+
+    jsr TEST_ROL1
+    jsr PRINT_RES
+
+    jsr TEST_ROL2
+    jsr PRINT_RES
+
+    jsr TEST_ROL3
+    jsr PRINT_RES
+
+    jsr TEST_ROL4
+    jsr PRINT_RES
+
+    jsr TEST_ROR1
+    jsr PRINT_RES
+
+    jsr TEST_ROR2
+    jsr PRINT_RES
+
+    jsr TEST_ROR3
+    jsr PRINT_RES
+
+    jsr TEST_ROR4
+    jsr PRINT_RES
+
+  .Exit_REDRAW_4:
+    rts
+
+!zone
+
+; ==============================================================================
+; SUBROUTINE: REDRAW_5
+; ------------------------------------------------------------------------------
+; Descrizione:  Esegue i test della pagina 5 (ADC e SBC, in binario e in BCD) e
+;               stampa il risultato di ciascuno, con i flag, con PRINT_RES.
+;
+;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
+;               proprie celle di lavoro, il cui contenuto non è garantito dopo
+;               la chiamata.
+;
+; Input:
+;   - _A_IMAGE (1 byte, RAM)     : Valore di .A
+;   - _M_IMAGE (1 byte, RAM)     : Valore della cella di memoria
+;   - _CARRY_IMAGE (1 byte, RAM) : Valore del flag di Carry (0 o 1)
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal, Zero, Carry)
+; Dipendenze Esterne:   "draw_screen.asm"
+;                       "opcode_tests.asm"
+; ==============================================================================
+!zone Redraw_5
+
+  REDRAW_5:
+    jsr TEST_ADC_HEX
+    jsr PRINT_RES
+
+    jsr TEST_SBC_HEX
+    jsr PRINT_RES
+
+    jsr TEST_ADC_BCD
+    jsr PRINT_RES
+
+    jsr TEST_SBC_BCD
+    jsr PRINT_RES
+
+  .Exit_REDRAW_5:
+    rts
+
+!zone
+
+; Indirizzi delle strutture delle pagine, in ordine di numero
+; di pagina (0-4).
 PAGE_LAYOUTS:
   !word PAGE_LAYOUT_1
   !word PAGE_LAYOUT_2
@@ -27,245 +308,156 @@ PAGE_LAYOUTS:
   !word PAGE_LAYOUT_4
   !word PAGE_LAYOUT_5
 
-; Common header for all pages
+; Intestazione comune a tutte le pagine, nel formato dei
+; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 PAGE_HEADER:
-  !text 0,1,ECM_BG1," BINARY PLAYGROUND ",0
-  !text 0,29,ECM_BG2,"?",ECM_BG0," FOR HELP",0
-  !text 1,1,ECM_BG2,"PAGE #",0
-  !text 3,1,ECM_BG1," LOAD ",0
-  !text 3,9,ECM_BG2,"7654",0
-  !text 3,14,ECM_BG2,"3210",0
-  !text 3,20,ECM_BG2,"HEX",0
-  !text 3,25,ECM_BG2,"UNS",0
-  !text 3,30,ECM_BG2,"SIG",0
-  !text 3,35,ECM_BG2,"NVZC",0
-  !text $FF,$FF
+  !text 0, 1, ECM_BG1, " BINARY PLAYGROUND ", $00
+  !text 0, 29, ECM_BG2, "?", ECM_BG0, " FOR HELP", $00
+  !text 1, 1, ECM_BG2, "PAGE #", $00
+  !text 3, 1, ECM_BG1, " LOAD ", $00
+  !text 3, 9, ECM_BG2, "7654", $00
+  !text 3, 14, ECM_BG2, "3210", $00
+  !text 3, 20, ECM_BG2, "HEX", $00
+  !text 3, 25, ECM_BG2, "UNS", $00
+  !text 3, 30, ECM_BG2, "SIG", $00
+  !text 3, 35, ECM_BG2, "NVZC", $00
+  !text $FF, $FF
 
-; Page layouts
+; ------------------------------------------------------------------------------
+; Strutture delle pagine. Ogni struttura comincia con 10 byte:
+;
+;   byte 0    Riga di .A ($FF se la pagina non mostra .A)
+;   byte 1    Riga della memoria ($FF se non è mostrata)
+;   byte 2    Maschera dei flag per .A e per la memoria
+;   byte 3-6  Maschere dei flag dei risultati da 1 a 4
+;   byte 7    Riga del Carry ($FF se non è mostrato)
+;   byte 8-9  Indirizzo della subroutine REDRAW_n
+;
+; Seguono le etichette della pagina, nel formato dei messaggi
+; di PRINT_MSG [NOTA #01 in print_tools.asm]. Nel titolo, $05
+; e $90 sono i codici PETSCII di bianco e nero.
+; ------------------------------------------------------------------------------
+
 PAGE_LAYOUT_1:
-  !byte $FF                     ;  0: Is accumulator row active? $FF = No, others = Row #.
-  !byte $05                     ;  1: Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
-  !byte %10000010               ;  3: Flag mask for result #1.
-  !byte %10000010               ;  4: Flag mask for result #2.
-  !byte %10000010               ;  5: Flag mask for result #3.
-  !byte %11000011               ;  6: Flag mask for result #4.
-  !byte $FF                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
-  !word REDRAW_1                ;  8: Address of screen redraw routine.
+  !byte $FF
+  !byte 5
+  !byte %10000010
+  !byte %10000010
+  !byte %10000010
+  !byte %10000010
+  !byte %11000011
+  !byte $FF
+  !word REDRAW_1
 
-  !text 1,16,ECM_BG3,5," INCREMENT & DECREMENT ",144,0
-  !text 5,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 9,1,ECM_BG1," INCREMENT ",0
-  !text 11,4,ECM_BG2,"INC:",0
-  !text 14,1,ECM_BG1," DECREMENT ",0
-  !text 16,4,ECM_BG2,"DEC:",0
-  !text $FF,$FF
+  !text 1, 16, ECM_BG3, $05, " INCREMENT & DECREMENT ", $90, $00
+  !text 5, 6, ECM_BG2, "M:", ECM_BG0, $00
+  !text 9, 1, ECM_BG1, " INCREMENT ", $00
+  !text 11, 4, ECM_BG2, "INC:", $00
+  !text 14, 1, ECM_BG1, " DECREMENT ", $00
+  !text 16, 4, ECM_BG2, "DEC:", $00
+  !text $FF, $FF
 
 PAGE_LAYOUT_2:
-  !byte $05                     ;  0: Is accumulator row active? $FF = No, others = Row #.
-  !byte $06                     ;  1: Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
-  !byte %10000011               ;  3: Flag mask for result #1.
-  !byte %11000011               ;  4: Flag mask for result #2.
-  !byte %11000010               ;  5: Flag mask for result #3.
-  !byte %11000011               ;  6: Flag mask for result #4.
-  !byte $08                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
-  !word REDRAW_2                ;  8: Address of screen redraw routine.
+  !byte 5
+  !byte 6
+  !byte %10000010
+  !byte %10000011
+  !byte %11000011
+  !byte %11000010
+  !byte %11000011
+  !byte 8
+  !word REDRAW_2
 
-  !text 1,18,ECM_BG3,5," TESTS & COMPARISONS ",144,0
-  !text 5,6,ECM_BG2,"A:",ECM_BG0,0
-  !text 6,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 8,21,ECM_BG2,"CARRY BEFORE OP:",0
-  !text 10,1,ECM_BG1," UNSIGNED COMPARISON ",0
-  !text 12,4,ECM_BG2,"CMP:",0
-  !text 15,1,ECM_BG1," SIGNED COMPARISON ",0
-  !text 17,4,ECM_BG2,"SBC:",0
-  !text 20,1,ECM_BG1," BIT TEST ",0
-  !text 22,4,ECM_BG2,"BIT:",0
-  !text $FF,$FF
+  !text 1, 18, ECM_BG3, $05, " TESTS & COMPARISONS ", $90, $00
+  !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
+  !text 6, 6, ECM_BG2, "M:", ECM_BG0, $00
+  !text 8, 21, ECM_BG2, "CARRY BEFORE OP:", $00
+  !text 10, 1, ECM_BG1, " UNSIGNED COMPARISON ", $00
+  !text 12, 4, ECM_BG2, "CMP:", $00
+  !text 15, 1, ECM_BG1, " SIGNED COMPARISON ", $00
+  !text 17, 4, ECM_BG2, "SBC:", $00
+  !text 20, 1, ECM_BG1, " BIT TEST ", $00
+  !text 22, 4, ECM_BG2, "BIT:", $00
+  !text $FF, $FF
 
 PAGE_LAYOUT_3:
-  !byte $05                     ;  0: Is accumulator row active? $FF = No, others = Row #.
-  !byte $06                     ;  1: Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
-  !byte %10000010               ;  3: Flag mask for result #1.
-  !byte %10000010               ;  4: Flag mask for result #2.
-  !byte %10000010               ;  5: Flag mask for result #3.
-  !byte %10000010               ;  6: Flag mask for result #4.
-  !byte $FF                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
-  !word REDRAW_3                ;  8: Address of screen redraw routine.
+  !byte 5
+  !byte 6
+  !byte %10000010
+  !byte %10000010
+  !byte %10000010
+  !byte %10000010
+  !byte %10000010
+  !byte $FF
+  !word REDRAW_3
 
-  !text 1,20,ECM_BG3,5," BOOLEAN OPERATORS ",144,0
-  !text 5,6,ECM_BG2,"A:",ECM_BG0,0
-  !text 6,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 10,1,ECM_BG1," BITWISE AND ",0
-  !text 12,4,ECM_BG2,"AND:",0
-  !text 15,1,ECM_BG1," BITWISE OR ",0
-  !text 17,4,ECM_BG2,"ORA:",0
-  !text 20,1,ECM_BG1," BITWISE EXCLUSIVE OR ",0
-  !text 22,4,ECM_BG2,"EOR:",0
-  !text $FF,$FF
+  !text 1, 20, ECM_BG3, $05, " BOOLEAN OPERATORS ", $90, $00
+  !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
+  !text 6, 6, ECM_BG2, "M:", ECM_BG0, $00
+  !text 10, 1, ECM_BG1, " BITWISE AND ", $00
+  !text 12, 4, ECM_BG2, "AND:", $00
+  !text 15, 1, ECM_BG1, " BITWISE OR ", $00
+  !text 17, 4, ECM_BG2, "ORA:", $00
+  !text 20, 1, ECM_BG1, " BITWISE EXCLUSIVE OR ", $00
+  !text 22, 4, ECM_BG2, "EOR:", $00
+  !text $FF, $FF
 
 PAGE_LAYOUT_4:
-  !byte $04                     ;  0: Is accumulator row active? $FF = No, others = Row #.
-  !byte $FF                     ;  1: Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
-  !byte %10000011               ;  3: Flag mask for result #1.
-  !byte %10000011               ;  4: Flag mask for result #2.
-  !byte %10000011               ;  5: Flag mask for result #3.
-  !byte %10000011               ;  6: Flag mask for result #4.
-  !byte $05                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
-  !word REDRAW_4                ;  8: Address of screen redraw routine.
+  !byte 4
+  !byte $FF
+  !byte %10000010
+  !byte %10000011
+  !byte %10000011
+  !byte %10000011
+  !byte %10000011
+  !byte 5
+  !word REDRAW_4
 
-  !text 1,23,ECM_BG3,5," SHIFT & ROTATE ",144,0
-  !text 4,6,ECM_BG2,"A:",ECM_BG0,0
-  !text 5,1,ECM_BG1," SHIFT LEFT ",0
-  !text 5,21,ECM_BG2,"CARRY BEFORE OP:",0
-  !text 6,3,ECM_BG2,"ASL1:",0
-  !text 7,3,ECM_BG2,"ASL2:",0
-  !text 8,3,ECM_BG2,"ASL3:",0
-  !text 9,3,ECM_BG2,"ASL4:",0
-  !text 10,1,ECM_BG1," SHIFT RIGHT ",0
-  !text 11,3,ECM_BG2,"LSR1:",0
-  !text 12,3,ECM_BG2,"LSR2:",0
-  !text 13,3,ECM_BG2,"LSR3:",0
-  !text 14,3,ECM_BG2,"LSR4:",0
-  !text 15,1,ECM_BG1," ROTATE LEFT ",0
-  !text 16,3,ECM_BG2,"ROL1:",0
-  !text 17,3,ECM_BG2,"ROL2:",0
-  !text 18,3,ECM_BG2,"ROL3:",0
-  !text 19,3,ECM_BG2,"ROL4:",0
-  !text 20,1,ECM_BG1," ROTATE RIGHT ",0
-  !text 21,3,ECM_BG2,"ROR1:",0
-  !text 22,3,ECM_BG2,"ROR2:",0
-  !text 23,3,ECM_BG2,"ROR3:",0
-  !text 24,3,ECM_BG2,"ROR4:",0
-  !text $FF,$FF
+  !text 1, 23, ECM_BG3, $05, " SHIFT & ROTATE ", $90, $00
+  !text 4, 6, ECM_BG2, "A:", ECM_BG0, $00
+  !text 5, 1, ECM_BG1, " SHIFT LEFT ", $00
+  !text 5, 21, ECM_BG2, "CARRY BEFORE OP:", $00
+  !text 6, 3, ECM_BG2, "ASL1:", $00
+  !text 7, 3, ECM_BG2, "ASL2:", $00
+  !text 8, 3, ECM_BG2, "ASL3:", $00
+  !text 9, 3, ECM_BG2, "ASL4:", $00
+  !text 10, 1, ECM_BG1, " SHIFT RIGHT ", $00
+  !text 11, 3, ECM_BG2, "LSR1:", $00
+  !text 12, 3, ECM_BG2, "LSR2:", $00
+  !text 13, 3, ECM_BG2, "LSR3:", $00
+  !text 14, 3, ECM_BG2, "LSR4:", $00
+  !text 15, 1, ECM_BG1, " ROTATE LEFT ", $00
+  !text 16, 3, ECM_BG2, "ROL1:", $00
+  !text 17, 3, ECM_BG2, "ROL2:", $00
+  !text 18, 3, ECM_BG2, "ROL3:", $00
+  !text 19, 3, ECM_BG2, "ROL4:", $00
+  !text 20, 1, ECM_BG1, " ROTATE RIGHT ", $00
+  !text 21, 3, ECM_BG2, "ROR1:", $00
+  !text 22, 3, ECM_BG2, "ROR2:", $00
+  !text 23, 3, ECM_BG2, "ROR3:", $00
+  !text 24, 3, ECM_BG2, "ROR4:", $00
+  !text $FF, $FF
 
 PAGE_LAYOUT_5:
-  !byte $05                     ;  0: Is accumulator row active? $FF = No, others = Row #.
-  !byte $06                     ;  1: Is memory row active? $FF = No, others = Row #.
-  !byte %10000010               ;  2: Flag mask for accumulator / memory contents.
-  !byte %11000011               ;  3: Flag mask for result #1.
-  !byte %11000011               ;  4: Flag mask for result #2.
-  !byte %11000011               ;  5: Flag mask for result #3.
-  !byte %11000011               ;  6: Flag mask for result #4.
-  !byte $08                     ;  7: Can Carry flag be modified before operation? $FF = No, others = Row #.
-  !word REDRAW_5                ;  8: Address of page redraw routine.
+  !byte 5
+  !byte 6
+  !byte %10000010
+  !byte %11000011
+  !byte %11000011
+  !byte %11000011
+  !byte %11000011
+  !byte 8
+  !word REDRAW_5
 
-  !text 1,27,ECM_BG3,5," ARITHMETIC ",144,0
-  !text 5,6,ECM_BG2,"A:",ECM_BG0,0
-  !text 6,6,ECM_BG2,"M:",ECM_BG0,0
-  !text 8,21,ECM_BG2,"CARRY BEFORE OP:",0
-  !text 10,1,ECM_BG1," BINARY ARITHMETIC ",0
-  !text 12,4,ECM_BG2,"ADC:",0
-  !text 13,4,ECM_BG2,"SBC:",0
-  !text 16,1,ECM_BG1," BINARY CODED DECIMAL ARITHMETIC ",0
-  !text 18,20,ECM_BG2,"BCD",0
-  !text 19,4,ECM_BG2,"ADC:",0
-  !text 20,4,ECM_BG2,"SBC:",0
-  !text $FF,$FF
-
-REDRAW_1:
-  jsr TEST_INC
-  jsr PRINT_RES
-
-  jsr TEST_DEC
-  jsr PRINT_RES
-
-.Exit_REDRAW_1:
-  rts
-
-REDRAW_2:
-  jsr TEST_CMP
-  jsr PRINT_RES
-
-  jsr TEST_SBC
-  jsr PRINT_RES
-
-  jsr TEST_BIT
-  jsr PRINT_RES
-
-.Exit_REDRAW_2:
-  rts
-
-REDRAW_3:
-  jsr TEST_AND
-  jsr PRINT_RES
-
-  jsr TEST_ORA
-  jsr PRINT_RES
-
-  jsr TEST_EOR
-  jsr PRINT_RES
-
-.Exit_REDRAW_3:
-  rts
-
-REDRAW_4:
-  jsr TEST_ASL1
-  jsr PRINT_RES
-
-  jsr TEST_ASL2
-  jsr PRINT_RES
-
-  jsr TEST_ASL3
-  jsr PRINT_RES
-
-  jsr TEST_ASL4
-  jsr PRINT_RES
-
-  jsr TEST_LSR1
-  jsr PRINT_RES
-
-  jsr TEST_LSR2
-  jsr PRINT_RES
-
-  jsr TEST_LSR3
-  jsr PRINT_RES
-
-  jsr TEST_LSR4
-  jsr PRINT_RES
-
-  jsr TEST_ROL1
-  jsr PRINT_RES
-
-  jsr TEST_ROL2
-  jsr PRINT_RES
-
-  jsr TEST_ROL3
-  jsr PRINT_RES
-
-  jsr TEST_ROL4
-  jsr PRINT_RES
-
-  jsr TEST_ROR1
-  jsr PRINT_RES
-
-  jsr TEST_ROR2
-  jsr PRINT_RES
-
-  jsr TEST_ROR3
-  jsr PRINT_RES
-
-  jsr TEST_ROR4
-  jsr PRINT_RES
-
-.Exit_REDRAW_4:
-  rts
-
-REDRAW_5:
-  jsr TEST_ADC_HEX
-  jsr PRINT_RES
-
-  jsr TEST_SBC_HEX
-  jsr PRINT_RES
-
-  jsr TEST_ADC_BCD
-  jsr PRINT_RES
-
-  jsr TEST_SBC_BCD
-  jsr PRINT_RES
-
-.Exit_REDRAW_5:
-  rts
+  !text 1, 27, ECM_BG3, $05, " ARITHMETIC ", $90, $00
+  !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
+  !text 6, 6, ECM_BG2, "M:", ECM_BG0, $00
+  !text 8, 21, ECM_BG2, "CARRY BEFORE OP:", $00
+  !text 10, 1, ECM_BG1, " BINARY ARITHMETIC ", $00
+  !text 12, 4, ECM_BG2, "ADC:", $00
+  !text 13, 4, ECM_BG2, "SBC:", $00
+  !text 16, 1, ECM_BG1, " BINARY CODED DECIMAL ARITHMETIC ", $00
+  !text 18, 20, ECM_BG2, "BCD", $00
+  !text 19, 4, ECM_BG2, "ADC:", $00
+  !text 20, 4, ECM_BG2, "SBC:", $00
+  !text $FF, $FF
