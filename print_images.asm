@@ -43,10 +43,10 @@
 
   .Loop_Print_Bit:
     cpx #4                          ; FOR (Corpo)
-    bne .No_Nibble_Space            ; Se sono già stati stampati 4 bit,
+    bne .No_Nibble_Space            ; IF: sono già stati stampati 4 bit
 
-    tay                             ; sposta il cursore di una posizione a
-    lda #$1D                        ; destra.
+    tay                             ; Sposta il cursore di una posizione a destra.
+    lda #$1D
     jsr __PUT_CHAR
     tya
 
@@ -99,20 +99,20 @@
   PRINT_HEX_OR_BCD:
     pha                             ; Salva .A sullo stack.
 
-    lda #%00001000                  ; Controlla il flag di Decimal: se vale 1, ZP_2
+    lda #%00001000                  ; Controlla il flag di Decimal.
 
-    bit _P_IMAGE                    ; punta alla tabella delle cifre BCD.
-    bne .Else_BCD_Digits
+    bit _P_IMAGE
+    bne .Else_BCD_Digits            ; IF: il flag di Decimal è a 0
 
-    lda #<.HEX_DIGITS
+    lda #<.HEX_DIGITS               ; Punta ZP_2 alla tabella delle cifre esadecimali.
     sta ZP_2
     lda #>.HEX_DIGITS
     sta ZP_2+1
     jmp .Print_Dollar
 
   .Else_BCD_Digits:
-    lda #<.BCD_DIGITS
-    sta ZP_2
+    lda #<.BCD_DIGITS               ; ELSE
+    sta ZP_2                        ; Punta ZP_2 alla tabella delle cifre BCD.
     lda #>.BCD_DIGITS
     sta ZP_2+1
 
@@ -236,14 +236,14 @@
 
   PRINT_SIGNED:
     tay                             ; Salva una copia di .A in .Y.
-    bmi .Else_Negative              ; Se il valore è negativo salta avanti,
+    bmi .Else_Negative              ; IF: il valore è positivo
 
-    lda #"+"                        ; altrimenti carica in .A il codice ASCII di
-    +m_Skip2                        ; "+" e salta l'istruzione seguente.
+    lda #"+"                        ; Carica in .A il codice ASCII di "+"
+    +m_Skip2                        ; e salta l'istruzione seguente.
 
   .Else_Negative:
-    lda #"-"                        ; Carica in .A il codice ASCII di "-"
-    jsr __PUT_CHAR                  ; e stampa il carattere che è in .A.
+    lda #"-"                        ; ELSE
+    jsr __PUT_CHAR                  ; Stampa il segno, che è in .A.
 
     tya                             ; Recupera .A: se è positivo lo stampa
     bpl .Exit_PRINT_SIGNED          ; subito,
@@ -292,17 +292,17 @@
     stx __BG_COL                    ; predefinito è il colore di sfondo 0.
 
   .Test_N:
-    lda #%10000000                  ; Controlla se N va stampato: _FLAG_MASK ha a 1 i bit dei
+    lda #%10000000                  ; Controlla se N va stampato.
 
-    bit _FLAG_MASK                  ; flag da stampare, quindi se il bit #7 è a 0 salta alla
-    beq .No_N_Selected              ; stampa di "-".
+    bit _FLAG_MASK
+    beq .No_N_Selected              ; IF: N è tra i flag da stampare
 
-    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0"
+    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0".
 
-    bit _P_IMAGE                    ; e controlla N: se è a 0 cambia il colore e
-    beq .No_N_Set                   ; lo stampa,
+    bit _P_IMAGE
+    beq .No_N_Set                   ; IF: N è a 1
 
-    iny                             ; altrimenti cambia il codice in .Y in "1".
+    iny                             ; Cambia il codice in .Y in "1".
 
   .No_N_Set:
     ldx #VIC_BG1                    ; I flag interessati si stampano con il colore
@@ -312,17 +312,17 @@
     jsr PRINT_FLAG_CHAR
 
   .Test_V:
-    lda #%01000000                  ; Controlla se V va stampato: se il bit #6 di
+    lda #%01000000                  ; Controlla se V va stampato.
 
-    bit _FLAG_MASK                  ; _FLAG_MASK è a 0, salta alla stampa di "-".
-    beq .No_V_Selected
+    bit _FLAG_MASK
+    beq .No_V_Selected              ; IF: V è tra i flag da stampare
 
-    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0"
+    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0".
 
-    bit _P_IMAGE                    ; e controlla V: se è a 0 cambia il colore e
-    beq .No_V_Set                   ; lo stampa,
+    bit _P_IMAGE
+    beq .No_V_Set                   ; IF: V è a 1
 
-    iny                             ; altrimenti cambia il codice in .Y in "1".
+    iny                             ; Cambia il codice in .Y in "1".
 
   .No_V_Set:
     ldx #VIC_BG1                    ; I flag interessati si stampano con il colore
@@ -332,17 +332,17 @@
     jsr PRINT_FLAG_CHAR
 
   .Test_Z:
-    lda #%00000010                  ; Controlla se Z va stampato: se il bit #1 di
+    lda #%00000010                  ; Controlla se Z va stampato.
 
-    bit _FLAG_MASK                  ; _FLAG_MASK è a 0, salta alla stampa di "-".
-    beq .No_Z_Selected
+    bit _FLAG_MASK
+    beq .No_Z_Selected              ; IF: Z è tra i flag da stampare
 
-    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0"
+    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0".
 
-    bit _P_IMAGE                    ; e controlla Z: se è a 0 cambia il colore e
-    beq .No_Z_Set                   ; lo stampa,
+    bit _P_IMAGE
+    beq .No_Z_Set                   ; IF: Z è a 1
 
-    iny                             ; altrimenti cambia il codice in .Y in "1".
+    iny                             ; Cambia il codice in .Y in "1".
 
   .No_Z_Set:
     ldx #VIC_BG1                    ; I flag interessati si stampano con il colore
@@ -352,17 +352,17 @@
     jsr PRINT_FLAG_CHAR
 
   .Test_C:
-    lda #%00000001                  ; Controlla se C va stampato: se il bit #0 di
+    lda #%00000001                  ; Controlla se C va stampato.
 
-    bit _FLAG_MASK                  ; _FLAG_MASK è a 0, salta alla stampa di "-".
+    bit _FLAG_MASK
     beq .Exit_PRINT_FLAGS
 
-    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0"
+    ldy #"0"                        ; Prepara in .Y il codice ASCII di "0".
 
-    bit _P_IMAGE                    ; e controlla C: se è a 0 cambia il colore e
-    beq .No_C_Set                   ; lo stampa,
+    bit _P_IMAGE
+    beq .No_C_Set                   ; IF: C è a 1
 
-    iny                             ; altrimenti cambia il codice in .Y in "1".
+    iny                             ; Cambia il codice in .Y in "1".
 
   .No_C_Set:
     ldx #VIC_BG1                    ; I flag interessati si stampano con il colore

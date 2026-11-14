@@ -133,26 +133,29 @@ START:
   .Loop_Read_Key:
     jsr GETIN                   ; FOREVER
 
-  .Case_1_5:
     cmp #"1"
-    bcc .Case_C
+    bcc .Read_Next_Key
 
     cmp #"6"
-    bcs .Case_C
+    bcc .Case_1_5               ; CASE: tasti da "1" a "5"
 
-    jsr REFRESH_PAGE
-
-  .Case_C:
     cmp #"C"
-    bne .Case_X
+    beq .Case_C                 ; CASE: tasto "C"
 
-    jsr TOGGLE_CARRY
-
-  .Case_X:
     cmp #"X"
     beq .Exit_MAIN
 
-    +m_Bra .Loop_Read_Key
+    +m_Bra .Read_Next_Key
+
+  .Case_1_5:
+    jsr REFRESH_PAGE
+    +m_Bra .Read_Next_Key
+
+  .Case_C:
+    jsr TOGGLE_CARRY
+
+  .Read_Next_Key:
+    +m_Bra .Loop_Read_Key       ; FOREVER: legge il tasto successivo
 
   .Exit_MAIN:
     lda #<PALETTE_STD           ; Imposta i colori del VIC-II

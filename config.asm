@@ -190,5 +190,5 @@ __BG_COL                    = $03           ; Cella in ZP: selettore del colore 
 __VIC_MODEL                 = $04           ; Cella in ZP: modello di VIC-II rilevato
 __KBD_HISTORY               = $05           ; Cella in ZP: serie storica di KEYSCAN
 __FP_SAVED_SP               = $06           ; Cella in ZP: .S salvato prima delle chiamate alla ROM (fp)
-__PUT_CHAR                  = PUT_CHAR_ECM  ; Subroutine di stampa di un carattere (driver ECM del programma)
 __PUT_STRING                = $AB1E         ; Subroutine di stampa di una stringa terminata da zero (STROUT)
+__PUT_CHAR                  = PUT_CHAR_ECM  ; Subroutine di stampa di un carattere (driver ECM del programma)
