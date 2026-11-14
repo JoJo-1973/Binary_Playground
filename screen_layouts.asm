@@ -308,6 +308,16 @@ PAGE_LAYOUTS:
   !word PAGE_LAYOUT_4
   !word PAGE_LAYOUT_5
 
+
+TITLE_SCREEN:
+  !text 6,9,"**********************",$00
+  !text 7,9,"*                    *",$00
+  !text 8,9,"* BINARY  PLAYGROUND *",$00
+  !text 9,9,"*                    *",$00
+  !text 10,9,"**********************",$00
+  !text 14,9,"PRESS ANY KEY TO START",$00
+  !text $FF,$ff
+
 ; Intestazione comune a tutte le pagine, nel formato dei
 ; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 PAGE_HEADER:

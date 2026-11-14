@@ -123,14 +123,11 @@ START:
     jsr VIC_PALETTE
     +m_VIC_Ext_Color_On         ; e attiva il modo Colore di Sfondo Esteso.
 
-    jsr PRINT_PAGE              ; Disegna la pagina corrente,
-    lda #VIC_BG0
-    sta __BG_COL
-    jsr PRINT_A                 ; le righe di .A, della memoria e del Carry
-    jsr PRINT_M
-    jsr PRINT_CARRY
+    lda #0                      ; Inizializza l'indice della pagina da visualizzare.
+    sta _CURR_PAGE
 
-    jsr REDRAW_4                ; e i risultati dei test.
+    jsr PRINT_TITLE                   ; Stampa il titolo del programma.
+    +m_Bra .Refresh
 
   .Loop_Read_Key:
     jsr GETIN                   ; REPEAT
@@ -138,7 +135,45 @@ START:
   .Loop_Check_Key:
     beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
 
+    cmp #"1"
+    beq .Update_Page
+
+    cmp #"2"
+    beq .Update_Page
+
+    cmp #"3"
+    beq .Update_Page
+
+    cmp #"4"
+    beq .Update_Page
+
+    cmp #"5"
+    beq .Update_Page
+
+    cmp #"X"
+    beq .Exit_MAIN
+
+  +m_Bra .Loop_Read_Key
+
+  .Update_Page
+    sec                         ; trasforma il codice PETSCII del tasto premuto
+    sbc #"1"                    ; in un indice alla pagina da visualizzare.
+    sta _CURR_PAGE
+
+  .Refresh:
+    jsr PRINT_PAGE              ; Disegna la pagina corrente ed imposta il colore di sfondo.
+    lda #VIC_BG0
+    sta __BG_COL
+
+    jsr PRINT_A                 ; Stampa .A, se serve.
+    jsr PRINT_M                 ; Stampa M, se serve.
+    jsr PRINT_CARRY             ; Stampa C, se serve.
+
+  .End_Refresh:
+    +m_Bra .Loop_Read_Key
+
   .Exit_MAIN:
+    jsr CLRSCR                  ; Pulisci lo schermo.
     rts
 
 !zone
@@ -206,7 +241,7 @@ _FLAG_MASK:
   !byte %00000000
 
 _CURR_PAGE:
-  !byte 3
+  !byte 0
 
 ; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
 ; nell'ordine in cui li legge VIC_PALETTE.

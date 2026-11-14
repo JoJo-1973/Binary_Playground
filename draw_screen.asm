@@ -44,6 +44,34 @@
 ;                       "binary_playground.asm"
 ;                       "screen_layouts.asm"
 ; ==============================================================================
+
+  PRINT_TITLE:
+    jsr CLRSCR                  ; Cancella lo schermo.
+
+    lda #<TITLE_SCREEN           ; Punta ZP_1 alla tabella dei messaggi
+    sta ZP_1                    ; dell'intestazione
+    lda #>TITLE_SCREEN
+    sta ZP_1+1
+
+  .Loop_Print_Title:
+    lda #ZP_1                   ; REPEAT
+    jsr PRINT_MSG               ; e la stampa.
+
+  .Loop_Check_Title:
+    bcc .Loop_Print_Title      ; REPEAT UNTIL: la tabella è finita
+
+  .Loop_Read_Key:
+    jsr GETIN                   ; REPEAT
+
+  .Loop_Check_Key:
+    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
+
+
+
+  .Exit_PRINT_TITLE:
+    rts
+
+
 !zone Print_Page_Header
 
   PRINT_PAGE_HEADER:
