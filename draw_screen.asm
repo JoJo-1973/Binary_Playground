@@ -2,10 +2,11 @@
 ; FILE:           draw_screen.asm
 ; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
-; DESCRIZIONE:    Utilità per disegnare le pagine: l'intestazione comune, le
-;                 etichette della pagina corrente e le righe con l'immagine di
-;                 un byte in tutti i formati.
+; DESCRIZIONE:    Utilità per disegnare: le schermate del titolo e dell'aiuto,
+;                 l'intestazione comune, le etichette della pagina corrente e le
+;                 righe con l'immagine di un byte in tutti i formati.
 ; CONTENUTO:      PRINT_TITLE         Stampa la schermata del titolo
+;                 PRINT_HELP          Stampa la schermata di aiuto
 ;                 PRINT_PAGE_HEADER   Disegna l'intestazione comune delle pagine
 ;                 PRINT_PAGE          Disegna intestazione ed etichette
 ;                 PRINT_A             Stampa la riga di .A
@@ -68,12 +69,34 @@
 
 !zone
 
+; ==============================================================================
+; SUBROUTINE: PRINT_HELP
+; ------------------------------------------------------------------------------
+; Descrizione:  Cancella lo schermo, stampa la schermata di aiuto (tavola
+;               HELP_SCREEN) e attende la pressione di un tasto.
+;
+; Input:
+;   - Nessuno
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
+;                       ZP_1 (2 byte)
+; Dipendenze Esterne:   <c64/kernal.asm>
+;                       <c64/symbols.asm>
+;                       <system/print_tools.asm>
+;                       "screen_layouts.asm"
+; ==============================================================================
 !zone Print_Help
 
   PRINT_HELP:
     jsr CLRSCR                  ; Cancella lo schermo.
 
-    lda #<HELP_SCREEN          ; Punta ZP_1 alla tabella dei messaggi
+    lda #<HELP_SCREEN           ; Punta ZP_1 alla tabella dei messaggi
     sta ZP_1                    ; della schermata di aiuto.
     lda #>HELP_SCREEN
     sta ZP_1+1
@@ -83,7 +106,7 @@
     jsr PRINT_MSG               ; Stampa il messaggio.
 
   .Loop_Check_Help:
-    bcc .Loop_Print_Help       ; REPEAT UNTIL: la tabella è finita
+    bcc .Loop_Print_Help        ; REPEAT UNTIL: la tabella è finita
 
   .Loop_Read_Key:
     jsr GETIN                   ; REPEAT
@@ -95,7 +118,6 @@
     rts
 
 !zone
-
 
 ; ==============================================================================
 ; SUBROUTINE: PRINT_PAGE_HEADER

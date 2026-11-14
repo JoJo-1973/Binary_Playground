@@ -3,8 +3,8 @@
 ; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
 ; DESCRIZIONE:    Strutture che descrivono le cinque pagine (dati e etichette),
-;                 l'intestazione comune, la schermata del titolo e l'utilità per
-;                 leggere le strutture.
+;                 l'intestazione comune, le schermate del titolo e dell'aiuto e
+;                 l'utilità per leggere le strutture.
 ; CONTENUTO:      GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
 ; DIPENDENZE:     Nessuna
 ; REQUISITI ZP:   ZP_1
@@ -58,29 +58,26 @@ PAGE_LAYOUTS:
   !word PAGE_LAYOUT_5
 
 TITLE_SCREEN:
-  !text 6, 9,ECM_BG1,5, "**********************", $00
+  !text 6, 9, ECM_BG1, $05, "**********************", $00
   !text 7, 9, "*                    *", $00
   !text 8, 9, "* BINARY  PLAYGROUND *", $00
   !text 9, 9, "*                    *", $00
   !text 10, 9, "**********************", $00
-  !text 14, 8, ECM_BG2,144," PRESS ANY KEY TO START ",ECM_BG0, $00
+  !text 14, 8, ECM_BG2, $90, " PRESS ANY KEY TO START ", ECM_BG0, $00
   !text $FF, $FF
 
 HELP_SCREEN:
-  !text 2,1,ECM_BG1," 1 ",ECM_BG0,5," INCREMENT & DECREMENT",$90,0
-  !text 4,1,ECM_BG1," 2 ",ECM_BG0,5," TESTS & COMPARISONS" ,$90 ,0
-  !text 6,1,ECM_BG1," 3 ",ECM_BG0,5," BOOLEAN OPERATORS"  ,$90 ,0
-  !text 8,1,ECM_BG1," 4 ",ECM_BG0,5," SHIFTS & ROTATIONS",$90,0
-  !text 10,1,ECM_BG1," 5 ",ECM_BG0,5," ARITHMETIC",$90,0
-  !text 14,1,ECM_BG0,5,"USE ",$90,ECM_BG1," CRSR ",ECM_BG0,5, " TO SELECT BIT",$90,0
-  !text 16,5,ECM_BG1," RETURN ",ECM_BG0, 5," TO TOGGLE BIT",$90,0
-  !text 18,5,ECM_BG1," C ",ECM_BG0,5, " TO TOGGLE CARRY BEFORE OP",$90,0
-  !text 20,5,ECM_BG1," X ",ECM_BG0,5, " TO QUIT",$90,0
-  !text 23,6,ECM_BG2," PRESS ANY KEY  TO CONTINUE ",0
-  !text $FF,$ff
-
-
-
+  !text 2, 1, ECM_BG1, " 1 ", ECM_BG0, $05, " INCREMENT & DECREMENT", $90, $00
+  !text 4, 1, ECM_BG1, " 2 ", ECM_BG0, $05, " TESTS & COMPARISONS", $90, $00
+  !text 6, 1, ECM_BG1, " 3 ", ECM_BG0, $05, " BOOLEAN OPERATORS", $90, $00
+  !text 8, 1, ECM_BG1, " 4 ", ECM_BG0, $05, " SHIFTS & ROTATIONS", $90, $00
+  !text 10, 1, ECM_BG1, " 5 ", ECM_BG0, $05, " ARITHMETIC", $90, $00
+  !text 14, 1, ECM_BG0, $05, "USE ", $90, ECM_BG1, " CRSR ", ECM_BG0, $05, " TO SELECT BIT", $90, $00
+  !text 16, 5, ECM_BG1, " RETURN ", ECM_BG0, $05, " TO TOGGLE BIT", $90, $00
+  !text 18, 5, ECM_BG1, " C ", ECM_BG0, $05, " TO TOGGLE CARRY BEFORE OP", $90, $00
+  !text 20, 5, ECM_BG1, " X ", ECM_BG0, $05, " TO QUIT", $90, $00
+  !text 23, 6, ECM_BG2, " PRESS ANY KEY  TO CONTINUE ", $00
+  !text $FF, $FF
 
 ; Intestazione comune a tutte le pagine, nel formato dei
 ; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].

@@ -106,7 +106,7 @@ START:
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal,
-;                       Interrupt, Zero, Carry), SCROLY, __BG_COL
+;                       Interrupt, Zero, Carry), SCROLY, _CURR_PAGE, __BG_COL
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <chip/vic_ii.asm>
@@ -127,7 +127,7 @@ START:
 
     jsr PRINT_TITLE             ; Stampa il titolo del programma.
 
-    lda #0                    ; Inizializza l'indice della pagina da visualizzare.
+    lda #0                      ; Inizializza l'indice della pagina da visualizzare.
     sta _CURR_PAGE
     jsr REFRESH_PAGE
 
@@ -144,7 +144,7 @@ START:
     beq .Case_C                 ; CASE: tasto "C"
 
     cmp #"?"
-    beq .Case_Help                 ; CASE: tasto "?"
+    beq .Case_Help              ; CASE: tasto "?"
 
     cmp #"X"
     beq .Exit_MAIN
@@ -184,21 +184,21 @@ START:
 ; ==============================================================================
 ; SUBROUTINE: REFRESH_PAGE
 ; ------------------------------------------------------------------------------
-; Descrizione:  Imposta la pagina da visualizzare a partire dal tasto premuto e
-;               ridisegna lo schermo: intestazione ed etichette della pagina,
-;               operandi A e M, Carry e risultati dei test.
+; Descrizione:  Ridisegna lo schermo con la pagina corrente (_CURR_PAGE):
+;               intestazione ed etichette della pagina, operandi A e M, Carry e
+;               risultati dei test.
 ;
 ; Input:
-;   - .A (1 byte, CPU)         : Codice PETSCII del tasto premuto ("1"-"5")
+;   - _CURR_PAGE (1 byte, RAM) : Indice della pagina corrente (0-4)
 ;
 ; Output:
-;   - _CURR_PAGE (1 byte, RAM) : Indice della pagina visualizzata (0-4)
+;   - Nessuno
 ;
 ; Variazione Stack (.S):
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal, Interrupt,
-;                       Zero, Carry), _CURR_PAGE, __BG_COL
+;                       Zero, Carry), __BG_COL
 ; Dipendenze Esterne:   <chip/vic_ii.asm>
 ;                       "draw_screen.asm"
 ; ==============================================================================
