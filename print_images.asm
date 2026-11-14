@@ -3,10 +3,9 @@
 ; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
 ; DESCRIZIONE:    Utilità per stampare l'immagine di un byte (in binario, in
-;                 esadecimale o BCD, in decimale senza e con segno), il flag di
-;                 Carry e lo stato dei flag NVZC.
-; CONTENUTO:      PRINT_CARRY       Stampa il valore del flag di Carry
-;                 PRINT_BINARY      Stampa .A in binario
+;                 esadecimale o BCD, in decimale senza e con segno) e lo stato
+;                 dei flag NVZC.
+; CONTENUTO:      PRINT_BINARY      Stampa .A in binario
 ;                 PRINT_HEX_OR_BCD  Stampa .A in esadecimale o in BCD
 ;                 PRINT_UNSIGNED    Stampa .A in decimale senza segno
 ;                 PRINT_SIGNED      Stampa .A in decimale con segno
@@ -15,7 +14,6 @@
 ; DIPENDENZE:     Nessuna
 ; REQUISITI ZP:   __BG_COL, ZP_2
 ; ==============================================================================
-
 
 ; ==============================================================================
 ; SUBROUTINE: PRINT_BINARY
@@ -102,6 +100,7 @@
     pha                             ; Salva .A sullo stack.
 
     lda #%00001000                  ; Controlla il flag di Decimal: se vale 1, ZP_2
+
     bit _P_IMAGE                    ; punta alla tabella delle cifre BCD.
     bne .Else_BCD_Digits
 
@@ -294,6 +293,7 @@
 
   .Test_N:
     lda #%10000000                  ; Controlla se N va stampato: _FLAG_MASK ha a 1 i bit dei
+
     bit _FLAG_MASK                  ; flag da stampare, quindi se il bit #7 è a 0 salta alla
     beq .No_N_Selected              ; stampa di "-".
 
@@ -313,6 +313,7 @@
 
   .Test_V:
     lda #%01000000                  ; Controlla se V va stampato: se il bit #6 di
+
     bit _FLAG_MASK                  ; _FLAG_MASK è a 0, salta alla stampa di "-".
     beq .No_V_Selected
 
@@ -332,6 +333,7 @@
 
   .Test_Z:
     lda #%00000010                  ; Controlla se Z va stampato: se il bit #1 di
+
     bit _FLAG_MASK                  ; _FLAG_MASK è a 0, salta alla stampa di "-".
     beq .No_Z_Selected
 
@@ -351,6 +353,7 @@
 
   .Test_C:
     lda #%00000001                  ; Controlla se C va stampato: se il bit #0 di
+
     bit _FLAG_MASK                  ; _FLAG_MASK è a 0, salta alla stampa di "-".
     beq .Exit_PRINT_FLAGS
 

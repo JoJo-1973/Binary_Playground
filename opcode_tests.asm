@@ -6,7 +6,12 @@
 ;                 correnti. Per ognuna riporta il risultato, il registro di
 ;                 stato, la maschera dei flag che interessano e la riga di
 ;                 schermo dove stampare il risultato.
-; CONTENUTO:      TEST_INC      INX sul valore della memoria
+; CONTENUTO:      TESTS_1       Ridisegna i risultati della pagina 1
+;                 TESTS_2       Ridisegna i risultati della pagina 2
+;                 TESTS_3       Ridisegna i risultati della pagina 3
+;                 TESTS_4       Ridisegna i risultati della pagina 4
+;                 TESTS_5       Ridisegna i risultati della pagina 5
+;                 TEST_INC      INX sul valore della memoria
 ;                 TEST_DEC      DEX sul valore della memoria
 ;                 TEST_CMP      CMP tra .A e la memoria
 ;                 TEST_SBC      SBC tra .A e la memoria
@@ -39,7 +44,7 @@
 ; ==============================================================================
 
 ; ==============================================================================
-; SUBROUTINE: REDRAW_1
+; SUBROUTINE: TESTS_1
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Esegue i test della pagina 1 (INC e DEC) e stampa il risultato
 ;               di ciascuno, con i flag, con PRINT_RES.
@@ -59,24 +64,23 @@
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
 ; Dipendenze Esterne:   "draw_screen.asm"
-;                       "opcode_tests.asm"
 ; ==============================================================================
-!zone Redraw_1
+!zone Tests_1
 
-  REDRAW_1:
+  TESTS_1:
     jsr TEST_INC
     jsr PRINT_RES
 
     jsr TEST_DEC
     jsr PRINT_RES
 
-  .Exit_REDRAW_1:
+  .Exit_TESTS_1:
     rts
 
 !zone
 
 ; ==============================================================================
-; SUBROUTINE: REDRAW_2
+; SUBROUTINE: TESTS_2
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Esegue i test della pagina 2 (CMP, SBC e BIT) e stampa il
 ;               risultato di ciascuno, con i flag, con PRINT_RES.
@@ -98,11 +102,10 @@
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
 ; Dipendenze Esterne:   "draw_screen.asm"
-;                       "opcode_tests.asm"
 ; ==============================================================================
-!zone Redraw_2
+!zone Tests_2
 
-  REDRAW_2:
+  TESTS_2:
     jsr TEST_CMP
     jsr PRINT_RES
 
@@ -112,13 +115,13 @@
     jsr TEST_BIT
     jsr PRINT_RES
 
-  .Exit_REDRAW_2:
+  .Exit_TESTS_2:
     rts
 
 !zone
 
 ; ==============================================================================
-; SUBROUTINE: REDRAW_3
+; SUBROUTINE: TESTS_3
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Esegue i test della pagina 3 (AND, ORA e EOR) e stampa il
 ;               risultato di ciascuno, con i flag, con PRINT_RES.
@@ -139,11 +142,10 @@
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
 ; Dipendenze Esterne:   "draw_screen.asm"
-;                       "opcode_tests.asm"
 ; ==============================================================================
-!zone Redraw_3
+!zone Tests_3
 
-  REDRAW_3:
+  TESTS_3:
     jsr TEST_AND
     jsr PRINT_RES
 
@@ -153,13 +155,13 @@
     jsr TEST_EOR
     jsr PRINT_RES
 
-  .Exit_REDRAW_3:
+  .Exit_TESTS_3:
     rts
 
 !zone
 
 ; ==============================================================================
-; SUBROUTINE: REDRAW_4
+; SUBROUTINE: TESTS_4
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Esegue i test della pagina 4 (ASL, LSR, ROL e ROR, ripetute da
 ;               una a quattro volte) e stampa il risultato di ciascuno, con i
@@ -181,11 +183,10 @@
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
 ; Dipendenze Esterne:   "draw_screen.asm"
-;                       "opcode_tests.asm"
 ; ==============================================================================
-!zone Redraw_4
+!zone Tests_4
 
-  REDRAW_4:
+  TESTS_4:
     jsr TEST_ASL1
     jsr PRINT_RES
 
@@ -234,13 +235,13 @@
     jsr TEST_ROR4
     jsr PRINT_RES
 
-  .Exit_REDRAW_4:
+  .Exit_TESTS_4:
     rts
 
 !zone
 
 ; ==============================================================================
-; SUBROUTINE: REDRAW_5
+; SUBROUTINE: TESTS_5
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Esegue i test della pagina 5 (ADC e SBC, in binario e in BCD) e
 ;               stampa il risultato di ciascuno, con i flag, con PRINT_RES.
@@ -260,13 +261,13 @@
 ; Variazione Stack (.S):
 ;   - Stabile
 ;
-; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal, Zero, Carry)
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal,
+;                       Interrupt, Zero, Carry)
 ; Dipendenze Esterne:   "draw_screen.asm"
-;                       "opcode_tests.asm"
 ; ==============================================================================
-!zone Redraw_5
+!zone Tests_5
 
-  REDRAW_5:
+  TESTS_5:
     jsr TEST_ADC_HEX
     jsr PRINT_RES
 
@@ -279,7 +280,7 @@
     jsr TEST_SBC_BCD
     jsr PRINT_RES
 
-  .Exit_REDRAW_5:
+  .Exit_TESTS_5:
     rts
 
 !zone

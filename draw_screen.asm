@@ -5,15 +5,68 @@
 ; DESCRIZIONE:    Utilità per disegnare le pagine: l'intestazione comune, le
 ;                 etichette della pagina corrente e le righe con l'immagine di
 ;                 un byte in tutti i formati.
-; CONTENUTO:      PRINT_PAGE_HEADER   Disegna l'intestazione comune delle pagine
+; CONTENUTO:      PRINT_TITLE         Stampa la schermata del titolo
+;                 PRINT_PAGE_HEADER   Disegna l'intestazione comune delle pagine
 ;                 PRINT_PAGE          Disegna intestazione ed etichette
 ;                 PRINT_A             Stampa la riga di .A
 ;                 PRINT_M             Stampa la riga della memoria
+;                 PRINT_CARRY         Stampa il valore del flag di Carry
 ;                 PRINT_RES           Stampa la riga di un risultato
 ;                 PRINT_LINE          Stampa un byte in tutti i formati
+;                 PRINT_TESTS         Ridisegna i risultati dei test
 ; DIPENDENZE:     Nessuna
 ; REQUISITI ZP:   __BG_COL, ZP_1
 ; ==============================================================================
+
+; ==============================================================================
+; SUBROUTINE: PRINT_TITLE
+; ------------------------------------------------------------------------------
+; Descrizione:  Cancella lo schermo, stampa la schermata del titolo (tavola
+;               TITLE_SCREEN) e attende la pressione di un tasto.
+;
+; Input:
+;   - Nessuno
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
+;                       ZP_1 (2 byte)
+; Dipendenze Esterne:   <c64/kernal.asm>
+;                       <c64/symbols.asm>
+;                       <system/print_tools.asm>
+;                       "screen_layouts.asm"
+; ==============================================================================
+!zone Print_Title
+
+  PRINT_TITLE:
+    jsr CLRSCR                  ; Cancella lo schermo.
+
+    lda #<TITLE_SCREEN          ; Punta ZP_1 alla tabella dei messaggi
+    sta ZP_1                    ; del titolo.
+    lda #>TITLE_SCREEN
+    sta ZP_1+1
+
+  .Loop_Print_Title:
+    lda #ZP_1                   ; REPEAT
+    jsr PRINT_MSG               ; Stampa il messaggio.
+
+  .Loop_Check_Title:
+    bcc .Loop_Print_Title       ; REPEAT UNTIL: la tabella è finita
+
+  .Loop_Read_Key:
+    jsr GETIN                   ; REPEAT
+
+  .Loop_Check_Key:
+    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
+
+  .Exit_PRINT_TITLE:
+    rts
+
+!zone
 
 ; ==============================================================================
 ; SUBROUTINE: PRINT_PAGE_HEADER
@@ -44,47 +97,19 @@
 ;                       "binary_playground.asm"
 ;                       "screen_layouts.asm"
 ; ==============================================================================
-
-  PRINT_TITLE:
-    jsr CLRSCR                  ; Cancella lo schermo.
-
-    lda #<TITLE_SCREEN           ; Punta ZP_1 alla tabella dei messaggi
-    sta ZP_1                    ; dell'intestazione
-    lda #>TITLE_SCREEN
-    sta ZP_1+1
-
-  .Loop_Print_Title:
-    lda #ZP_1                   ; REPEAT
-    jsr PRINT_MSG               ; e la stampa.
-
-  .Loop_Check_Title:
-    bcc .Loop_Print_Title      ; REPEAT UNTIL: la tabella è finita
-
-  .Loop_Read_Key:
-    jsr GETIN                   ; REPEAT
-
-  .Loop_Check_Key:
-    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
-
-
-
-  .Exit_PRINT_TITLE:
-    rts
-
-
 !zone Print_Page_Header
 
   PRINT_PAGE_HEADER:
     jsr CLRSCR                  ; Cancella lo schermo.
 
     lda #<PAGE_HEADER           ; Punta ZP_1 alla tabella dei messaggi
-    sta ZP_1                    ; dell'intestazione
+    sta ZP_1                    ; dell'intestazione.
     lda #>PAGE_HEADER
     sta ZP_1+1
 
   .Loop_Print_Header:
     lda #ZP_1                   ; REPEAT
-    jsr PRINT_MSG               ; e la stampa.
+    jsr PRINT_MSG               ; Stampa il messaggio.
 
   .Loop_Check_Header:
     bcc .Loop_Print_Header      ; REPEAT UNTIL: la tabella è finita
@@ -292,8 +317,8 @@
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Stampa il valore del flag di Carry (_CARRY_IMAGE), "0" o "1",
 ;               alla colonna 38 della riga indicata dal byte 7 della struttura
-;               della pagina corrente. Va chiamata solo per le pagine che
-;               mostrano il Carry (byte 7 diverso da $FF).
+;               della pagina corrente. Se il byte 7 vale $FF la pagina non
+;               mostra il Carry e non stampa nulla.
 ;
 ;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
 ;               proprie celle di lavoro, il cui contenuto non è garantito dopo
@@ -317,19 +342,19 @@
 !zone Print_Carry
 
   PRINT_CARRY:
-    lda _CURR_PAGE                  ; Recupera la riga in cui stampare il flag di
-    ldy #7                          ; Carry.
+    lda _CURR_PAGE              ; Recupera la riga in cui stampare il flag di
+    ldy #7                      ; Carry.
     jsr GET_LAYOUT_ITEM
 
     cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
     beq .Exit_PRINT_CARRY
 
-    tax                             ; Posiziona il cursore.
+    tax                         ; Posiziona il cursore.
     ldy #38
     clc
     jsr PLOT
 
-    lda #"0"                        ; Calcola il carattere del Carry e lo stampa.
+    lda #"0"                    ; Calcola il carattere del Carry e lo stampa.
     clc
     adc _CARRY_IMAGE
     jsr __PUT_CHAR
@@ -465,17 +490,45 @@
 
 !zone
 
-PRINT_TESTS:
-  lda _CURR_PAGE                ; Recupera il byte basso dell'indirizzo della routine di ridisegno dei risultati.
-  ldy #8
-  jsr GET_LAYOUT_ITEM
-  sta _REDRAW_VECTOR
+; ==============================================================================
+; SUBROUTINE: PRINT_TESTS
+; ------------------------------------------------------------------------------
+; Descrizione:  Salta alla routine che ridisegna i risultati dei test della
+;               pagina corrente: ne legge l'indirizzo dalla struttura della
+;               pagina (byte 8-9), lo salva in _TESTS_VECTOR e lo esegue.
+;               L'RTS della routine di ridisegno riporta al chiamante
+;               di PRINT_TESTS.
+;
+; Input:
+;   - _CURR_PAGE (1 byte, RAM)    : Numero della pagina corrente (0-4)
+;
+; Output:
+;   - _TESTS_VECTOR (2 byte, RAM) : Indirizzo della routine di ridisegno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal,
+;                       Interrupt, Zero, Carry), ZP_1 (2 byte),
+;                       _TESTS_VECTOR
+; Dipendenze Esterne:   "binary_playground.asm"
+;                       "opcode_tests.asm"
+;                       "screen_layouts.asm"
+; ==============================================================================
+!zone Print_Tests
 
-  lda _CURR_PAGE                ; Recupera il byte alto dell'indirizzo della routine di ridisegno dei risultati.
-  ldy #9
-  jsr GET_LAYOUT_ITEM
-  sta _REDRAW_VECTOR+1
+  PRINT_TESTS:
+    lda _CURR_PAGE              ; Legge il byte basso dell'indirizzo
+    ldy #8                      ; della routine di ridisegno
+    jsr GET_LAYOUT_ITEM         ; dei risultati.
+    sta _TESTS_VECTOR
 
-  jmp (_REDRAW_VECTOR)          ; Esegui la rooutine e ritorna al chiamante di REDRAW_RESULTS.
+    lda _CURR_PAGE              ; Legge il byte alto dell'indirizzo
+    ldy #9                      ; della routine di ridisegno
+    jsr GET_LAYOUT_ITEM         ; dei risultati.
+    sta _TESTS_VECTOR+1
 
+  .Exit_PRINT_TESTS:
+    jmp (_TESTS_VECTOR)         ; Esegue la routine di ridisegno, che ritorna al chiamante.
 
+!zone

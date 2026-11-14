@@ -11,6 +11,8 @@
 ;                 in alto gli operandi (A, M se serve, e il Carry), in basso i
 ;                 risultati e i flag NVZC dopo l'operazione.
 ; CONTENUTO:      MAIN          Disegna la pagina corrente e attende un tasto
+;                 REFRESH_PAGE  Disegna la pagina scelta con un tasto
+;                 TOGGLE_CARRY  Inverte il flag di Carry e lo ridisegna
 ;                 PUT_CHAR_ECM  Stampa un carattere in modo ECM
 ; DIPENDENZE:     "config.asm"
 ;                 <c64/kernal.asm>
@@ -103,8 +105,8 @@ START:
 ; Variazione Stack (.S):
 ;   - Stabile
 ;
-; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
-;                       SCROLY, __BG_COL
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal,
+;                       Interrupt, Zero, Carry), SCROLY, __BG_COL
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <chip/vic_ii.asm>
@@ -123,46 +125,71 @@ START:
     jsr VIC_PALETTE
     +m_VIC_Ext_Color_On         ; e attiva il modo Colore di Sfondo Esteso.
 
-    jsr PRINT_TITLE                   ; Stampa il titolo del programma.
+    jsr PRINT_TITLE             ; Stampa il titolo del programma.
 
-    lda #"1"                      ; Inizializza l'indice della pagina da visualizzare.
+    lda #"1"                    ; Inizializza l'indice della pagina da visualizzare.
     jsr REFRESH_PAGE
 
   .Loop_Read_Key:
-    jsr GETIN                   ; REPEAT
+    jsr GETIN                   ; FOREVER
 
-.Case_1_5:
+  .Case_1_5:
     cmp #"1"
     bcc .Case_C
 
     cmp #"6"
     bcs .Case_C
+
     jsr REFRESH_PAGE
 
-.Case_C
+  .Case_C:
     cmp #"C"
     bne .Case_X
+
     jsr TOGGLE_CARRY
 
-.Case_X
+  .Case_X:
     cmp #"X"
     beq .Exit_MAIN
 
-  +m_Bra .Loop_Read_Key
+    +m_Bra .Loop_Read_Key
 
   .Exit_MAIN:
-    lda #<PALETTE_STD               ; Imposta i colori del VIC-II
+    lda #<PALETTE_STD           ; Imposta i colori del VIC-II
     ldx #>PALETTE_STD
     jsr VIC_PALETTE
-    +m_VIC_Ext_Color_Off         ; e disattiva il modo Colore di Sfondo Esteso.
+    +m_VIC_Ext_Color_Off        ; e disattiva il modo Colore di Sfondo Esteso.
 
     jsr CLRSCR                  ; Pulisci lo schermo ed esci.
     rts
 
 !zone
 
-  REFRESH_PAGE
-    sec                         ; trasforma il codice PETSCII del tasto premuto
+; ==============================================================================
+; SUBROUTINE: REFRESH_PAGE
+; ------------------------------------------------------------------------------
+; Descrizione:  Imposta la pagina da visualizzare a partire dal tasto premuto e
+;               ridisegna lo schermo: intestazione ed etichette della pagina,
+;               operandi A e M, Carry e risultati dei test.
+;
+; Input:
+;   - .A (1 byte, CPU)         : Codice PETSCII del tasto premuto ("1"-"5")
+;
+; Output:
+;   - _CURR_PAGE (1 byte, RAM) : Indice della pagina visualizzata (0-4)
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal, Interrupt,
+;                       Zero, Carry), _CURR_PAGE, __BG_COL
+; Dipendenze Esterne:   <chip/vic_ii.asm>
+;                       "draw_screen.asm"
+; ==============================================================================
+!zone Refresh_Page
+
+  REFRESH_PAGE:
+    sec                         ; Trasforma il codice PETSCII del tasto premuto
     sbc #"1"                    ; in un indice alla pagina da visualizzare.
     sta _CURR_PAGE
 
@@ -174,29 +201,54 @@ START:
     jsr PRINT_M                 ; Stampa M, se serve.
     jsr PRINT_CARRY             ; Stampa C, se serve.
 
-    jsr PRINT_TESTS          ; Aggiorna lo schermo con i risultati dei test.
+    jsr PRINT_TESTS             ; Aggiorna lo schermo con i risultati dei test.
 
   .Exit_REFRESH_PAGE:
     rts
 
+!zone
 
+; ==============================================================================
+; SUBROUTINE: TOGGLE_CARRY
+; ------------------------------------------------------------------------------
+; Descrizione:  Inverte il valore del Carry mostrato e lo ristampa, se la pagina
+;               corrente lo mostra (byte 7 della struttura diverso da $FF).
+;
+; Input:
+;   - _CURR_PAGE (1 byte, RAM)   : Indice della pagina corrente (0-4)
+;   - _CARRY_IMAGE (1 byte, RAM) : Valore del Carry (0 o 1)
+;
+; Output:
+;   - _CARRY_IMAGE (1 byte, RAM) : Nuovo valore del Carry (0 o 1)
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
+;                       _CARRY_IMAGE
+; Dipendenze Esterne:   "draw_screen.asm"
+;                       "screen_layouts.asm"
+; ==============================================================================
+!zone Toggle_Carry
 
-TOGGLE_CARRY:
-  lda _CURR_PAGE                ; Controlla se il Carry è richiesto dal layourt corrente.
-  ldy #7
-  jsr GET_LAYOUT_ITEM
+  TOGGLE_CARRY:
+    lda _CURR_PAGE              ; Controlla se il Carry è richiesto dal layout corrente.
+    ldy #7
+    jsr GET_LAYOUT_ITEM
 
-  cmp #$FF
-  beq .Exit_TOGGLE_CARRY
+    cmp #$FF
+    beq .Exit_TOGGLE_CARRY
 
-  sec                           ; Se sì, inverti il suo stato
-  lda #1
-  sbc _CARRY_IMAGE
-  sta _CARRY_IMAGE
-  jsr PRINT_CARRY
+    sec                         ; Se sì, inverti il suo stato.
+    lda #1
+    sbc _CARRY_IMAGE
+    sta _CARRY_IMAGE
+    jsr PRINT_CARRY
 
-.Exit_TOGGLE_CARRY:
-  rts
+  .Exit_TOGGLE_CARRY:
+    rts
+
+!zone
 
 ; ==============================================================================
 ; SUBROUTINE: PUT_CHAR_ECM
@@ -263,7 +315,7 @@ _FLAG_MASK:
 _CURR_PAGE:
   !byte 0
 
-_REDRAW_VECTOR:
+_TESTS_VECTOR:
   !word $0000
 
 ; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
@@ -272,4 +324,4 @@ PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_BLACK
 
 PALETTE_STD:
-  !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_LIGHT_BLUE
+  !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_LIGHT_BLUE

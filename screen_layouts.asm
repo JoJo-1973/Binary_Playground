@@ -3,14 +3,9 @@
 ; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
 ; DESCRIZIONE:    Strutture che descrivono le cinque pagine (dati e etichette),
-;                 l'intestazione comune e le utilità per leggerle e per
-;                 ridisegnare i risultati di ciascuna pagina.
+;                 l'intestazione comune, la schermata del titolo e l'utilità per
+;                 leggere le strutture.
 ; CONTENUTO:      GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
-;                 REDRAW_1          Ridisegna i risultati della pagina 1
-;                 REDRAW_2          Ridisegna i risultati della pagina 2
-;                 REDRAW_3          Ridisegna i risultati della pagina 3
-;                 REDRAW_4          Ridisegna i risultati della pagina 4
-;                 REDRAW_5          Ridisegna i risultati della pagina 5
 ; DIPENDENZE:     Nessuna
 ; REQUISITI ZP:   ZP_1
 ; ==============================================================================
@@ -53,7 +48,6 @@
 
 !zone
 
-
 ; Indirizzi delle strutture delle pagine, in ordine di numero
 ; di pagina (0-4).
 PAGE_LAYOUTS:
@@ -63,15 +57,14 @@ PAGE_LAYOUTS:
   !word PAGE_LAYOUT_4
   !word PAGE_LAYOUT_5
 
-
 TITLE_SCREEN:
-  !text 6,9,"**********************",$00
-  !text 7,9,"*                    *",$00
-  !text 8,9,"* BINARY  PLAYGROUND *",$00
-  !text 9,9,"*                    *",$00
-  !text 10,9,"**********************",$00
-  !text 14,9,"PRESS ANY KEY TO START",$00
-  !text $FF,$ff
+  !text 6, 9, "**********************", $00
+  !text 7, 9, "*                    *", $00
+  !text 8, 9, "* BINARY  PLAYGROUND *", $00
+  !text 9, 9, "*                    *", $00
+  !text 10, 9, "**********************", $00
+  !text 14, 9, "PRESS ANY KEY TO START", $00
+  !text $FF, $FF
 
 ; Intestazione comune a tutte le pagine, nel formato dei
 ; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
@@ -96,7 +89,7 @@ PAGE_HEADER:
 ;   byte 2    Maschera dei flag per .A e per la memoria
 ;   byte 3-6  Maschere dei flag dei risultati da 1 a 4
 ;   byte 7    Riga del Carry ($FF se non è mostrato)
-;   byte 8-9  Indirizzo della subroutine REDRAW_n
+;   byte 8-9  Indirizzo della subroutine TESTS_n
 ;
 ; Seguono le etichette della pagina, nel formato dei messaggi
 ; di PRINT_MSG [NOTA #01 in print_tools.asm]. Nel titolo, $05
@@ -112,7 +105,7 @@ PAGE_LAYOUT_1:
   !byte %10000010
   !byte %11000011
   !byte $FF
-  !word REDRAW_1
+  !word TESTS_1
 
   !text 1, 16, ECM_BG3, $05, " INCREMENT & DECREMENT ", $90, $00
   !text 5, 6, ECM_BG2, "M:", ECM_BG0, $00
@@ -131,7 +124,7 @@ PAGE_LAYOUT_2:
   !byte %11000010
   !byte %11000011
   !byte 8
-  !word REDRAW_2
+  !word TESTS_2
 
   !text 1, 18, ECM_BG3, $05, " TESTS & COMPARISONS ", $90, $00
   !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
@@ -154,7 +147,7 @@ PAGE_LAYOUT_3:
   !byte %10000010
   !byte %10000010
   !byte $FF
-  !word REDRAW_3
+  !word TESTS_3
 
   !text 1, 20, ECM_BG3, $05, " BOOLEAN OPERATORS ", $90, $00
   !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
@@ -176,7 +169,7 @@ PAGE_LAYOUT_4:
   !byte %10000011
   !byte %10000011
   !byte 5
-  !word REDRAW_4
+  !word TESTS_4
 
   !text 1, 19, ECM_BG3, $05, " SHIFTS & ROTATIONS ", $90, $00
   !text 4, 6, ECM_BG2, "A:", ECM_BG0, $00
@@ -212,7 +205,7 @@ PAGE_LAYOUT_5:
   !byte %11000011
   !byte %11000011
   !byte 8
-  !word REDRAW_5
+  !word TESTS_5
 
   !text 1, 27, ECM_BG3, $05, " ARITHMETIC ", $90, $00
   !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
