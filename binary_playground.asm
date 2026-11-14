@@ -19,8 +19,8 @@
 ;                 <system/branch.asm>
 ;                 <system/standard.asm>
 ;                 <io/chars.asm>
-;                 <system/print_tools.asm>
 ;                 <system/vic_ii_tools.asm>
+;                 <system/print_tools.asm>
 ;                 "print_images.asm"
 ;                 "draw_screen.asm"
 ;                 "screen_layouts.asm"
@@ -38,22 +38,23 @@
 ; Configurazione
 ; ------------------------------------------------------------------------------
 
-!source "config.asm", once
+; PROVA TEMPORANEA: once sospeso (LIB-01).
+!source "config.asm"
 
 ; ------------------------------------------------------------------------------
 ; Simboli
 ; ------------------------------------------------------------------------------
 
-!source <c64/kernal.asm>, once
-!source <c64/symbols.asm>, once
-!source <chip/vic_ii.asm>, once
+!source <c64/kernal.asm>
+!source <c64/symbols.asm>
+!source <chip/vic_ii.asm>
 
 ; ------------------------------------------------------------------------------
 ; Macro
 ; ------------------------------------------------------------------------------
 
-!source <system/branch.asm>, once
-!source <system/standard.asm>, once
+!source <system/branch.asm>
+!source <system/standard.asm>
 
 ; ------------------------------------------------------------------------------
 ; Inizio del codice
@@ -69,13 +70,13 @@ START:
 ; Codice
 ; ------------------------------------------------------------------------------
 
-!source <io/chars.asm>, once
-!source <system/print_tools.asm>, once
-!source <system/vic_ii_tools.asm>, once
-!source "print_images.asm", once
-!source "draw_screen.asm", once
-!source "screen_layouts.asm", once
-!source "opcode_tests.asm", once
+!source <io/chars.asm>
+!source <system/vic_ii_tools.asm>
+!source <system/print_tools.asm>
+!source "print_images.asm"
+!source "draw_screen.asm"
+!source "screen_layouts.asm"
+!source "opcode_tests.asm"
 
 ; ------------------------------------------------------------------------------
 ; Subroutine
