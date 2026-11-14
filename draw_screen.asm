@@ -288,6 +288,58 @@
 !zone
 
 ; ==============================================================================
+; SUBROUTINE: PRINT_CARRY
+; ------------------------------------------------------------------------------
+; Descrizione:  Stampa il valore del flag di Carry (_CARRY_IMAGE), "0" o "1",
+;               alla colonna 38 della riga indicata dal byte 7 della struttura
+;               della pagina corrente. Va chiamata solo per le pagine che
+;               mostrano il Carry (byte 7 diverso da $FF).
+;
+;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
+;               proprie celle di lavoro, il cui contenuto non è garantito dopo
+;               la chiamata.
+;
+; Input:
+;   - _CURR_PAGE (1 byte, RAM)   : Numero della pagina corrente (0-4)
+;   - _CARRY_IMAGE (1 byte, RAM) : Valore del flag di Carry (0 o 1)
+;
+; Output:
+;   - Nessuno
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
+; Dipendenze Esterne:   <c64/kernal.asm>
+;                       "binary_playground.asm"
+;                       "screen_layouts.asm"
+; ==============================================================================
+!zone Print_Carry
+
+  PRINT_CARRY:
+    lda _CURR_PAGE                  ; Recupera la riga in cui stampare il flag di
+    ldy #7                          ; Carry.
+    jsr GET_LAYOUT_ITEM
+
+    cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
+    beq .Exit_PRINT_CARRY
+
+    tax                             ; Posiziona il cursore.
+    ldy #38
+    clc
+    jsr PLOT
+
+    lda #"0"                        ; Calcola il carattere del Carry e lo stampa.
+    clc
+    adc _CARRY_IMAGE
+    jsr __PUT_CHAR
+
+  .Exit_PRINT_CARRY:
+    rts
+
+!zone
+
+; ==============================================================================
 ; SUBROUTINE: PRINT_RES
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Stampa la riga del risultato di un test (_RES_IMAGE), con i flag
@@ -412,3 +464,18 @@
     !byte 0
 
 !zone
+
+PRINT_TESTS:
+  lda _CURR_PAGE                ; Recupera il byte basso dell'indirizzo della routine di ridisegno dei risultati.
+  ldy #8
+  jsr GET_LAYOUT_ITEM
+  sta _REDRAW_VECTOR
+
+  lda _CURR_PAGE                ; Recupera il byte alto dell'indirizzo della routine di ridisegno dei risultati.
+  ldy #9
+  jsr GET_LAYOUT_ITEM
+  sta _REDRAW_VECTOR+1
+
+  jmp (_REDRAW_VECTOR)          ; Esegui la rooutine e ritorna al chiamante di REDRAW_RESULTS.
+
+

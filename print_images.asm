@@ -16,54 +16,6 @@
 ; REQUISITI ZP:   __BG_COL, ZP_2
 ; ==============================================================================
 
-; ==============================================================================
-; SUBROUTINE: PRINT_CARRY
-; ------------------------------------------------------------------------------
-; Descrizione:  Stampa il valore del flag di Carry (_CARRY_IMAGE), "0" o "1",
-;               alla colonna 38 della riga indicata dal byte 7 della struttura
-;               della pagina corrente. Va chiamata solo per le pagine che
-;               mostrano il Carry (byte 7 diverso da $FF).
-;
-;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
-;               proprie celle di lavoro, il cui contenuto non è garantito dopo
-;               la chiamata.
-;
-; Input:
-;   - _CURR_PAGE (1 byte, RAM)   : Numero della pagina corrente (0-4)
-;   - _CARRY_IMAGE (1 byte, RAM) : Valore del flag di Carry (0 o 1)
-;
-; Output:
-;   - Nessuno
-;
-; Variazione Stack (.S):
-;   - Stabile
-;
-; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   <c64/kernal.asm>
-;                       "binary_playground.asm"
-;                       "screen_layouts.asm"
-; ==============================================================================
-!zone Print_Carry
-
-  PRINT_CARRY:
-    lda _CURR_PAGE                  ; Recupera la riga in cui stampare il flag di
-    ldy #7                          ; Carry.
-    jsr GET_LAYOUT_ITEM
-
-    tax                             ; Posiziona il cursore.
-    ldy #38
-    clc
-    jsr PLOT
-
-    lda #"0"                        ; Calcola il carattere del Carry e lo stampa.
-    clc
-    adc _CARRY_IMAGE
-    jsr __PUT_CHAR
-
-  .Exit_PRINT_CARRY:
-    rts
-
-!zone
 
 ; ==============================================================================
 ; SUBROUTINE: PRINT_BINARY

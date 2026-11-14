@@ -123,44 +123,49 @@ START:
     jsr VIC_PALETTE
     +m_VIC_Ext_Color_On         ; e attiva il modo Colore di Sfondo Esteso.
 
-    lda #0                      ; Inizializza l'indice della pagina da visualizzare.
-    sta _CURR_PAGE
-
     jsr PRINT_TITLE                   ; Stampa il titolo del programma.
-    +m_Bra .Refresh
+
+    lda #"1"                      ; Inizializza l'indice della pagina da visualizzare.
+    jsr REFRESH_PAGE
 
   .Loop_Read_Key:
     jsr GETIN                   ; REPEAT
 
-  .Loop_Check_Key:
-    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
-
+.Case_1_5:
     cmp #"1"
-    beq .Update_Page
+    bcc .Case_C
 
-    cmp #"2"
-    beq .Update_Page
+    cmp #"6"
+    bcs .Case_C
+    jsr REFRESH_PAGE
 
-    cmp #"3"
-    beq .Update_Page
+.Case_C
+    cmp #"C"
+    bne .Case_X
+    jsr TOGGLE_CARRY
 
-    cmp #"4"
-    beq .Update_Page
-
-    cmp #"5"
-    beq .Update_Page
-
+.Case_X
     cmp #"X"
     beq .Exit_MAIN
 
   +m_Bra .Loop_Read_Key
 
-  .Update_Page
+  .Exit_MAIN:
+    lda #<PALETTE_STD               ; Imposta i colori del VIC-II
+    ldx #>PALETTE_STD
+    jsr VIC_PALETTE
+    +m_VIC_Ext_Color_Off         ; e disattiva il modo Colore di Sfondo Esteso.
+
+    jsr CLRSCR                  ; Pulisci lo schermo ed esci.
+    rts
+
+!zone
+
+  REFRESH_PAGE
     sec                         ; trasforma il codice PETSCII del tasto premuto
     sbc #"1"                    ; in un indice alla pagina da visualizzare.
     sta _CURR_PAGE
 
-  .Refresh:
     jsr PRINT_PAGE              ; Disegna la pagina corrente ed imposta il colore di sfondo.
     lda #VIC_BG0
     sta __BG_COL
@@ -169,14 +174,29 @@ START:
     jsr PRINT_M                 ; Stampa M, se serve.
     jsr PRINT_CARRY             ; Stampa C, se serve.
 
-  .End_Refresh:
-    +m_Bra .Loop_Read_Key
+    jsr PRINT_TESTS          ; Aggiorna lo schermo con i risultati dei test.
 
-  .Exit_MAIN:
-    jsr CLRSCR                  ; Pulisci lo schermo.
+  .Exit_REFRESH_PAGE:
     rts
 
-!zone
+
+
+TOGGLE_CARRY:
+  lda _CURR_PAGE                ; Controlla se il Carry è richiesto dal layourt corrente.
+  ldy #7
+  jsr GET_LAYOUT_ITEM
+
+  cmp #$FF
+  beq .Exit_TOGGLE_CARRY
+
+  sec                           ; Se sì, inverti il suo stato
+  lda #1
+  sbc _CARRY_IMAGE
+  sta _CARRY_IMAGE
+  jsr PRINT_CARRY
+
+.Exit_TOGGLE_CARRY:
+  rts
 
 ; ==============================================================================
 ; SUBROUTINE: PUT_CHAR_ECM
@@ -243,7 +263,13 @@ _FLAG_MASK:
 _CURR_PAGE:
   !byte 0
 
+_REDRAW_VECTOR:
+  !word $0000
+
 ; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
 ; nell'ordine in cui li legge VIC_PALETTE.
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_BLACK
+
+PALETTE_STD:
+  !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_TRANSPARENT,VIC_LIGHT_BLUE
