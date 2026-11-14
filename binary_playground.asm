@@ -63,7 +63,7 @@
 ; ------------------------------------------------------------------------------
 
 *= BASTXT
-  +m_BASIC_Preamble 10, START, "BINARY PLAYGROUND"
+  +m_BASIC_Preamble 10, START, "BINARY PLAYGROUND (C) 2026 JOJO1973"
 
 START:
   jmp MAIN
@@ -127,7 +127,8 @@ START:
 
     jsr PRINT_TITLE             ; Stampa il titolo del programma.
 
-    lda #"1"                    ; Inizializza l'indice della pagina da visualizzare.
+    lda #0                    ; Inizializza l'indice della pagina da visualizzare.
+    sta _CURR_PAGE
     jsr REFRESH_PAGE
 
   .Loop_Read_Key:
@@ -142,28 +143,40 @@ START:
     cmp #"C"
     beq .Case_C                 ; CASE: tasto "C"
 
+    cmp #"?"
+    beq .Case_Help                 ; CASE: tasto "?"
+
     cmp #"X"
     beq .Exit_MAIN
 
     +m_Bra .Read_Next_Key
 
   .Case_1_5:
+    sec                         ; Trasforma il codice PETSCII del tasto premuto
+    sbc #"1"                    ; in un indice alla pagina da visualizzare.
+    sta _CURR_PAGE
     jsr REFRESH_PAGE
     +m_Bra .Read_Next_Key
 
   .Case_C:
     jsr TOGGLE_CARRY
+    +m_Bra .Read_Next_Key
+
+  .Case_Help:
+    jsr PRINT_HELP
+    jsr REFRESH_PAGE
 
   .Read_Next_Key:
     +m_Bra .Loop_Read_Key       ; FOREVER: legge il tasto successivo
 
   .Exit_MAIN:
+    jsr CLRSCR                  ; Pulisci lo schermo.
+
     lda #<PALETTE_STD           ; Imposta i colori del VIC-II
     ldx #>PALETTE_STD
     jsr VIC_PALETTE
     +m_VIC_Ext_Color_Off        ; e disattiva il modo Colore di Sfondo Esteso.
 
-    jsr CLRSCR                  ; Pulisci lo schermo ed esci.
     rts
 
 !zone
@@ -192,10 +205,6 @@ START:
 !zone Refresh_Page
 
   REFRESH_PAGE:
-    sec                         ; Trasforma il codice PETSCII del tasto premuto
-    sbc #"1"                    ; in un indice alla pagina da visualizzare.
-    sta _CURR_PAGE
-
     jsr PRINT_PAGE              ; Disegna la pagina corrente ed imposta il colore di sfondo.
     lda #VIC_BG0
     sta __BG_COL

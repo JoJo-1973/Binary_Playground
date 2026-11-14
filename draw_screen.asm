@@ -68,6 +68,35 @@
 
 !zone
 
+!zone Print_Help
+
+  PRINT_HELP:
+    jsr CLRSCR                  ; Cancella lo schermo.
+
+    lda #<HELP_SCREEN          ; Punta ZP_1 alla tabella dei messaggi
+    sta ZP_1                    ; della schermata di aiuto.
+    lda #>HELP_SCREEN
+    sta ZP_1+1
+
+  .Loop_Print_Help:
+    lda #ZP_1                   ; REPEAT
+    jsr PRINT_MSG               ; Stampa il messaggio.
+
+  .Loop_Check_Help:
+    bcc .Loop_Print_Help       ; REPEAT UNTIL: la tabella è finita
+
+  .Loop_Read_Key:
+    jsr GETIN                   ; REPEAT
+
+  .Loop_Check_Key:
+    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
+
+  .Exit_PRINT_HELP:
+    rts
+
+!zone
+
+
 ; ==============================================================================
 ; SUBROUTINE: PRINT_PAGE_HEADER
 ; ------------------------------------------------------------------------------
