@@ -34,7 +34,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   Nessuna
+; Dipendenze Esterne:   <c64/petscii.asm>
 ; ==============================================================================
 !zone Print_Binary
 
@@ -46,7 +46,7 @@
     bne .No_Nibble_Space            ; IF: sono già stati stampati 4 bit
 
     tay                             ; Sposta il cursore di una posizione a destra.
-    lda #$1D
+    lda #PETSCII_CURSOR_RIGHT
     jsr __PUT_CHAR
     tya
 

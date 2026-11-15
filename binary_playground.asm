@@ -16,6 +16,7 @@
 ;                 PUT_CHAR_ECM  Stampa un carattere in modo ECM
 ; DIPENDENZE:     "config.asm"
 ;                 <c64/kernal.asm>
+;                 <c64/petscii.asm>
 ;                 <c64/symbols.asm>
 ;                 <chip/vic_ii.asm>
 ;                 <system/branch.asm>
@@ -48,6 +49,7 @@
 ; ------------------------------------------------------------------------------
 
 !source <c64/kernal.asm>
+!source <c64/petscii.asm>
 !source <c64/symbols.asm>
 !source <chip/vic_ii.asm>
 
