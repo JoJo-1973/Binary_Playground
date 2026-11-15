@@ -404,10 +404,20 @@
     clc
     jsr PLOT
 
+    lda #VIC_BG3                    ; Sfondo nero e testo bianco.
+    sta __BG_COL
+    lda #VIC_WHITE
+    sta COLOR
+
     lda #"0"                        ; Calcola il carattere del Carry e lo stampa.
     clc
     adc _CARRY_IMAGE
     jsr __PUT_CHAR
+
+    lda #VIC_BG0                    ; Sfondo verde e testo nero.
+    sta __BG_COL
+    lda #VIC_BLACK
+    sta COLOR
 
   .Exit_PRINT_CARRY:
     rts

@@ -50,7 +50,7 @@ HELP_SCREEN:
 ; Intestazione comune a tutte le pagine, nel formato dei
 ; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 PAGE_HEADER:
-  !text 0, 1, ECM_BG1, " BINARY PLAYGROUND ", $00
+  !text 0, 1, ECM_BG1, PETSCII_BLACK," BINARY PLAYGROUND ", $00
   !text 0, 29, ECM_BG2, "?", ECM_BG0, " FOR HELP", $00
   !text 1, 1, ECM_BG2, "PAGE #", $00
   !text 3, 1, ECM_BG1, " LOAD ", $00
