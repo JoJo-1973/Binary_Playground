@@ -128,10 +128,10 @@ START:
 
 ; [MAPPA: Variabili globali]
 _A_IMAGE:
-  !byte %10001111               ; Valore dell'accumulatore .A nei test.
+  !byte %00000000               ; Valore dell'accumulatore .A nei test.
 
 _M_IMAGE:
-  !byte %10000001               ; Valore della memoria M nei test.
+  !byte %00000000               ; Valore della memoria M nei test.
 
 _P_IMAGE:
   !byte 0                       ; Valore del registro di stato .P dopo i test.
@@ -240,6 +240,7 @@ _TESTS_VECTOR:
 
   .Case_C:
     jsr TOGGLE_CARRY            ; Inverti il valore del Carry (0/1).
+    jsr PRINT_TESTS
     +m_Bra .Read_Next_Key
 
   .Case_Help:
