@@ -80,11 +80,16 @@ BASIC_START         = BASTXT    ; Inizio del programma BASIC
 ; Costanti globali
 ; ------------------------------------------------------------------------------
 
-LAYOUT_ACC          = 0         ; Offset della posizione di .A nella struttura che descrive la pagina da visualizzare.
-LAYOUT_MEM          = 1         ; Offset della posizione di .M nella struttura che descrive la pagina da visualizzare.
-LAYOUT_CARRY        = 2         ; Offset della posizione di C nella struttura che descrive la pagina da visualizzare.
-LAYOUT_TESTS        = 3         ; Offset dell'indirizzo della batteria di test nella struttura che descrive la pagina da visualizzare.
-LAYOUT_LABELS       = 5         ; Offset dell'indirizzo della tabella di messaggi di testo nella struttura che descrive la pagina da visualizzare.
+; Offset dei vari campi della struttura del layout della pagina.
+LAYOUT_ACC          = 0         ; Riga alla quale visualizzare l'accumulatore ($FF = non presente).
+LAYOUT_MEM          = 1         ; Riga alla quale visualizzare la memoria ($FF = non presente).
+LAYOUT_CARRY        = 2         ; Riga alla quale visualizzare il flag di Carry ($FF = non presente).
+LAYOUT_FIRST_DIGIT    = 3         ; Indice della prima cifra sulla quale si può muovere il cursore.
+LAYOUT_LAST_DIGIT    = 4         ; Indice dell'ultim cifra sulla quale si può muovere il cursore.
+
+
+LAYOUT_TESTS        = 5         ; Indirizzo della batteria di test da eseguire.
+LAYOUT_LABELS       = 7         ; Indirizzo della tabella di etichette da stampare.
 
 ; ------------------------------------------------------------------------------
 ; Inizio del codice
@@ -114,8 +119,6 @@ START:
 ; [MAPPA: Moduli del programma]
 !source "screen_drawing.asm"
 !source "opcode_tests.asm"
-
-; [MAPPA: Tabelle dati]
 !source "data_tables.asm"
 
 ; ------------------------------------------------------------------------------
@@ -146,6 +149,12 @@ _CURR_PAGE:
 
 _CURR_DIGIT:
   !byte 0                       ; Cifra di .A (0-7) o di M (8-15) attualmente selezionata.
+
+_FIRST_DIGIT:
+  !byte 0                       ; Indice della prima cifra che può essere editata (0-15).
+
+_LAST_DIGIT:
+  !byte 0                       ; Indice dell'ultima cifra che può essere editata (0-15).
 
 _TESTS_VECTOR:
   !word $0000                   ; Vettore che punta alla batteria di test da eseguire.

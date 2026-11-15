@@ -11,6 +11,7 @@
 ; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
 ; nell'ordine in cui li legge VIC_PALETTE.
 
+; [MAPPA: Palette di colore]
 ; Palette usata dal programma
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_BLACK
@@ -19,6 +20,7 @@ PALETTE:
 PALETTE_STD:
   !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_WHITE, VIC_RED, VIC_CYAN, VIC_PURPLE, VIC_BLACK, VIC_LIGHT_BLUE
 
+; [MAPPA: Tavole dei messaggi]
 ; Schermata del titolo nel formato dei
 ; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 TITLE_SCREEN:
@@ -136,6 +138,7 @@ PAGE_5:
   !text 20, 4, ECM_BG2, "SBC:", $00
   !text $FF, $FF
 
+; [MAPPA: Layout delle pagine di test]
 ; ------------------------------------------------------------------------------
 ; Strutture delle pagine. Ogni struttura comincia con 10 byte:
 ;
@@ -164,6 +167,8 @@ PAGE_LAYOUT_1:
   !byte $FF
   !byte 5
   !byte $FF
+  !byte 8
+  !byte 15
   !word TESTS_1
   !word PAGE_1
 
@@ -171,6 +176,8 @@ PAGE_LAYOUT_2:
   !byte 5
   !byte 6
   !byte 8
+  !byte 0
+  !byte 15
   !word TESTS_2
   !word PAGE_2
 
@@ -178,6 +185,8 @@ PAGE_LAYOUT_3:
   !byte 5
   !byte 6
   !byte $FF
+  !byte 0
+  !byte 15
   !word TESTS_3
   !word PAGE_3
 
@@ -185,6 +194,8 @@ PAGE_LAYOUT_4:
   !byte 4
   !byte $FF
   !byte 5
+  !byte 0
+  !byte 7
   !word TESTS_4
   !word PAGE_4
 
@@ -192,5 +203,7 @@ PAGE_LAYOUT_5:
   !byte 5
   !byte 6
   !byte 8
+  !byte 0
+  !byte 15
   !word TESTS_5
   !word PAGE_5
