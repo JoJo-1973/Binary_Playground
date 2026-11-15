@@ -1,13 +1,11 @@
 ; ==============================================================================
-; FILE:           screen_layouts.asm
+; FILE:           data_tables.asm
 ; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
-; DESCRIZIONE:    Strutture che descrivono le cinque pagine (dati e etichette),
-;                 l'intestazione comune, le schermate del titolo e dell'aiuto e
-;                 l'utilità per leggere le strutture.
-; CONTENUTO:      GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
+; DESCRIZIONE:    Tabelle dati: le palette dei colori, le strutture delle cinque
+;                 pagine (dati ed etichette) con la tabella dei loro indirizzi,
+;                 l'intestazione comune e le schermate del titolo e dell'aiuto.
 ; DIPENDENZE:     Nessuna
-; REQUISITI ZP:   ZP_1
 ; ==============================================================================
 
 ; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
@@ -17,7 +15,6 @@ PALETTE:
 
 PALETTE_STD:
   !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_LIGHT_BLUE
-
 
 ; Indirizzi delle strutture delle pagine, in ordine di numero
 ; di pagina (0-4).

@@ -1,5 +1,5 @@
 ; ==============================================================================
-; FILE:           draw_screen.asm
+; FILE:           screen_drawing.asm
 ; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
 ; DESCRIZIONE:    Utilità per disegnare: le schermate del titolo e dell'aiuto,
@@ -15,8 +15,14 @@
 ;                 PRINT_RES           Stampa la riga di un risultato
 ;                 PRINT_LINE          Stampa un byte in tutti i formati
 ;                 PRINT_TESTS         Ridisegna i risultati dei test
+;                 PRINT_BINARY        Stampa .A in binario
+;                 PRINT_HEX_OR_BCD    Stampa .A in esadecimale o BCD
+;                 PRINT_UNSIGNED      Stampa .A in decimale senza segno
+;                 PRINT_SIGNED        Stampa .A in decimale con segno
+;                 PRINT_FLAGS         Stampa lo stato dei flag N, V, Z e C
+;                 PRINT_FLAG_CHAR     Stampa il carattere di un flag
 ; DIPENDENZE:     Nessuna
-; REQUISITI ZP:   __BG_COL, ZP_1
+; REQUISITI ZP:   __BG_COL
 ; ==============================================================================
 
 ; ==============================================================================
@@ -39,30 +45,30 @@
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <system/print_tools.asm>
-;                       "screen_layouts.asm"
+;                       "data_tables.asm"
 ; ==============================================================================
 !zone Print_Title
 
   PRINT_TITLE:
-    jsr CLRSCR                  ; Cancella lo schermo.
+    jsr CLRSCR                      ; Cancella lo schermo.
 
-    lda #<TITLE_SCREEN          ; Punta ZP_1 alla tabella dei messaggi
-    sta ZP_1                    ; del titolo.
+    lda #<TITLE_SCREEN              ; Punta ZP_1 alla tabella dei messaggi
+    sta ZP_1                        ; del titolo.
     lda #>TITLE_SCREEN
     sta ZP_1+1
 
   .Loop_Print_Title:
-    lda #ZP_1                   ; REPEAT
-    jsr PRINT_MSG               ; Stampa il messaggio.
+    lda #ZP_1                       ; REPEAT
+    jsr PRINT_MSG                   ; Stampa il messaggio.
 
   .Loop_Check_Title:
-    bcc .Loop_Print_Title       ; REPEAT UNTIL: la tabella è finita
+    bcc .Loop_Print_Title           ; REPEAT UNTIL: la tabella è finita
 
   .Loop_Read_Key:
-    jsr GETIN                   ; REPEAT
+    jsr GETIN                       ; REPEAT
 
   .Loop_Check_Key:
-    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
+    beq .Loop_Read_Key              ; REPEAT UNTIL: è stato premuto un tasto
 
   .Exit_PRINT_TITLE:
     rts
@@ -89,30 +95,30 @@
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <system/print_tools.asm>
-;                       "screen_layouts.asm"
+;                       "data_tables.asm"
 ; ==============================================================================
 !zone Print_Help
 
   PRINT_HELP:
-    jsr CLRSCR                  ; Cancella lo schermo.
+    jsr CLRSCR                      ; Cancella lo schermo.
 
-    lda #<HELP_SCREEN           ; Punta ZP_1 alla tabella dei messaggi
-    sta ZP_1                    ; della schermata di aiuto.
+    lda #<HELP_SCREEN               ; Punta ZP_1 alla tabella dei messaggi
+    sta ZP_1                        ; della schermata di aiuto.
     lda #>HELP_SCREEN
     sta ZP_1+1
 
   .Loop_Print_Help:
-    lda #ZP_1                   ; REPEAT
-    jsr PRINT_MSG               ; Stampa il messaggio.
+    lda #ZP_1                       ; REPEAT
+    jsr PRINT_MSG                   ; Stampa il messaggio.
 
   .Loop_Check_Help:
-    bcc .Loop_Print_Help        ; REPEAT UNTIL: la tabella è finita
+    bcc .Loop_Print_Help            ; REPEAT UNTIL: la tabella è finita
 
   .Loop_Read_Key:
-    jsr GETIN                   ; REPEAT
+    jsr GETIN                       ; REPEAT
 
   .Loop_Check_Key:
-    beq .Loop_Read_Key          ; REPEAT UNTIL: è stato premuto un tasto
+    beq .Loop_Read_Key              ; REPEAT UNTIL: è stato premuto un tasto
 
   .Exit_PRINT_HELP:
     rts
@@ -146,26 +152,26 @@
 ;                       <chip/vic_ii.asm>
 ;                       <system/print_tools.asm>
 ;                       "binary_playground.asm"
-;                       "screen_layouts.asm"
+;                       "data_tables.asm"
 ; ==============================================================================
 !zone Print_Page_Header
 
   PRINT_PAGE_HEADER:
-    jsr CLRSCR                  ; Cancella lo schermo.
+    jsr CLRSCR                      ; Cancella lo schermo.
 
-    lda #<PAGE_HEADER           ; Punta ZP_1 alla tabella dei messaggi
-    sta ZP_1                    ; dell'intestazione.
+    lda #<PAGE_HEADER               ; Punta ZP_1 alla tabella dei messaggi
+    sta ZP_1                        ; dell'intestazione.
     lda #>PAGE_HEADER
     sta ZP_1+1
 
   .Loop_Print_Header:
-    lda #ZP_1                   ; REPEAT
-    jsr PRINT_MSG               ; Stampa il messaggio.
+    lda #ZP_1                       ; REPEAT
+    jsr PRINT_MSG                   ; Stampa il messaggio.
 
   .Loop_Check_Header:
-    bcc .Loop_Print_Header      ; REPEAT UNTIL: la tabella è finita
+    bcc .Loop_Print_Header          ; REPEAT UNTIL: la tabella è finita
 
-    lda #VIC_BG2                ; Stampa il numero della pagina.
+    lda #VIC_BG2                    ; Stampa il numero della pagina.
     sta __BG_COL
     +m_At 1, 7
     lda _CURR_PAGE
@@ -204,15 +210,14 @@
 ; Dipendenze Esterne:   <c64/symbols.asm>
 ;                       <system/print_tools.asm>
 ;                       "binary_playground.asm"
-;                       "screen_layouts.asm"
 ; ==============================================================================
 !zone Print_Page
 
   PRINT_PAGE:
-    jsr PRINT_PAGE_HEADER       ; Disegna l'intestazione.
+    jsr PRINT_PAGE_HEADER           ; Disegna l'intestazione.
 
-    lda _CURR_PAGE              ; Punta ZP_1 alla struttura della pagina, poi aggiunge lo
-    ldy #LAYOUT_ACC                      ; scostamento della tabella dei messaggi.
+    lda _CURR_PAGE                  ; Punta ZP_1 alla struttura della pagina, poi aggiunge lo
+    ldy #LAYOUT_ACC                 ; scostamento della tabella dei messaggi.
     jsr GET_LAYOUT_ITEM
 
     clc
@@ -225,11 +230,11 @@
     sta ZP_1+1
 
   .Loop_Print_Msg_Table:
-    lda #ZP_1                   ; REPEAT
-    jsr PRINT_MSG               ; Stampa le altre etichette della pagina.
+    lda #ZP_1                       ; REPEAT
+    jsr PRINT_MSG                   ; Stampa le altre etichette della pagina.
 
   .Loop_Check_Msg_Table:
-    bcc .Loop_Print_Msg_Table   ; REPEAT UNTIL: la tabella è finita
+    bcc .Loop_Print_Msg_Table       ; REPEAT UNTIL: la tabella è finita
 
   .Exit_PRINT_PAGE:
     rts
@@ -262,19 +267,18 @@
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
 ;                       _P_IMAGE, _FLAG_MASK
 ; Dipendenze Esterne:   "binary_playground.asm"
-;                       "screen_layouts.asm"
 ; ==============================================================================
 !zone Print_A
 
   PRINT_A:
-    lda _CURR_PAGE              ; La riga in cui si stampa .A è nel byte 0
-    ldy #LAYOUT_ACC                      ; della struttura della pagina.
+    lda _CURR_PAGE                  ; La riga in cui si stampa .A è nel byte 0
+    ldy #LAYOUT_ACC                 ; della struttura della pagina.
     jsr GET_LAYOUT_ITEM
 
-    cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
+    cmp #$FF                        ; Se la riga vale $FF non si stampa nulla.
     beq .Exit_PRINT_A_No_Row
 
-    tax                         ; Copia il numero di riga in .X.
+    tax                             ; Copia il numero di riga in .X.
 
     ; Controlla _A_IMAGE caricandolo in .Y e registra i flag
     ; in _P_IMAGE.
@@ -285,14 +289,14 @@
 
     sta _P_IMAGE
 
-    lda #%10000010              ; I caricamenti alterano solo i flag N e Z.
+    lda #%10000010                  ; I caricamenti alterano solo i flag N e Z.
     sta _FLAG_MASK
 
-    tya                         ; Mette sullo stack il byte da stampare
+    tya                             ; Mette sullo stack il byte da stampare
     pha
 
   .Exit_PRINT_A:
-    jmp PRINT_LINE              ; e passa alla stampa vera e propria.
+    jmp PRINT_LINE                  ; e passa alla stampa vera e propria.
 
   .Exit_PRINT_A_No_Row:
     rts
@@ -326,19 +330,18 @@
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
 ;                       _P_IMAGE, _FLAG_MASK
 ; Dipendenze Esterne:   "binary_playground.asm"
-;                       "screen_layouts.asm"
 ; ==============================================================================
 !zone Print_M
 
   PRINT_M:
-    lda _CURR_PAGE              ; La riga in cui si stampa la memoria è nel
-    ldy #LAYOUT_MEM                      ; byte 1 della struttura della pagina.
+    lda _CURR_PAGE                  ; La riga in cui si stampa la memoria è nel
+    ldy #LAYOUT_MEM                 ; byte 1 della struttura della pagina.
     jsr GET_LAYOUT_ITEM
 
-    cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
+    cmp #$FF                        ; Se la riga vale $FF non si stampa nulla.
     beq .Exit_PRINT_M_No_Row
 
-    tax                         ; Copia il numero di riga in .X.
+    tax                             ; Copia il numero di riga in .X.
 
     ; Controlla _M_IMAGE caricandolo in .Y e registra i flag
     ; in _P_IMAGE.
@@ -349,14 +352,14 @@
 
     sta _P_IMAGE
 
-    lda #%10000010              ; I caricamenti alterano solo i flag N e Z.
+    lda #%10000010                  ; I caricamenti alterano solo i flag N e Z.
     sta _FLAG_MASK
 
-    tya                         ; Mette sullo stack il byte da stampare
+    tya                             ; Mette sullo stack il byte da stampare
     pha
 
   .Exit_PRINT_M:
-    jmp PRINT_LINE              ; e passa alla stampa vera e propria.
+    jmp PRINT_LINE                  ; e passa alla stampa vera e propria.
 
   .Exit_PRINT_M_No_Row:
     rts
@@ -388,24 +391,23 @@
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       "binary_playground.asm"
-;                       "screen_layouts.asm"
 ; ==============================================================================
 !zone Print_Carry
 
   PRINT_CARRY:
-    lda _CURR_PAGE              ; Recupera la riga in cui stampare il flag di
-    ldy #LAYOUT_CARRY                      ; Carry.
+    lda _CURR_PAGE                  ; Recupera la riga in cui stampare il flag di
+    ldy #LAYOUT_CARRY               ; Carry.
     jsr GET_LAYOUT_ITEM
 
-    cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
+    cmp #$FF                        ; Se la riga vale $FF non si stampa nulla.
     beq .Exit_PRINT_CARRY
 
-    tax                         ; Posiziona il cursore.
+    tax                             ; Posiziona il cursore.
     ldy #38
     clc
     jsr PLOT
 
-    lda #"0"                    ; Calcola il carattere del Carry e lo stampa.
+    lda #"0"                        ; Calcola il carattere del Carry e lo stampa.
     clc
     adc _CARRY_IMAGE
     jsr __PUT_CHAR
@@ -443,11 +445,11 @@
 !zone Print_Res
 
   PRINT_RES:
-    lda _RES_IMAGE              ; Mette sullo stack il byte da stampare
+    lda _RES_IMAGE                  ; Mette sullo stack il byte da stampare
     pha
 
   .Exit_PRINT_RES:
-    jmp PRINT_LINE              ; e passa alla stampa vera e propria.
+    jmp PRINT_LINE                  ; e passa alla stampa vera e propria.
 
 !zone
 
@@ -480,7 +482,6 @@
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       "binary_playground.asm"
-;                       "print_images.asm"
 ; ==============================================================================
 !zone Print_Line
 
@@ -490,12 +491,12 @@
     clc
     jsr PLOT
 
-    pla                         ; Stampa il byte in binario.
+    pla                             ; Stampa il byte in binario.
     pha
 
     jsr PRINT_BINARY
 
-    ldx ._ROW                   ; Stampa il byte in esadecimale.
+    ldx ._ROW                       ; Stampa il byte in esadecimale.
     ldy #20
     clc
     jsr PLOT
@@ -505,7 +506,7 @@
 
     jsr PRINT_HEX_OR_BCD
 
-    ldx ._ROW                   ; Stampa il byte in decimale senza segno.
+    ldx ._ROW                       ; Stampa il byte in decimale senza segno.
     ldy #25
     clc
     jsr PLOT
@@ -515,7 +516,7 @@
 
     jsr PRINT_UNSIGNED
 
-    ldx ._ROW                   ; Stampa il byte in decimale con segno.
+    ldx ._ROW                       ; Stampa il byte in decimale con segno.
     ldy #29
     clc
     jsr PLOT
@@ -525,7 +526,7 @@
 
     jsr PRINT_SIGNED
 
-    ldx ._ROW                   ; Stampa i flag.
+    ldx ._ROW                       ; Stampa i flag.
     ldy #35
     clc
     jsr PLOT
@@ -533,7 +534,7 @@
     jsr PRINT_FLAGS
 
   .Exit_PRINT_LINE:
-    pla                         ; Toglie il byte dallo stack ed esce.
+    pla                             ; Toglie il byte dallo stack ed esce.
     rts
 
   ._ROW:
@@ -564,23 +565,22 @@
 ;                       _TESTS_VECTOR
 ; Dipendenze Esterne:   "binary_playground.asm"
 ;                       "opcode_tests.asm"
-;                       "screen_layouts.asm"
 ; ==============================================================================
 !zone Print_Tests
 
   PRINT_TESTS:
-    lda _CURR_PAGE              ; Legge il byte basso dell'indirizzo
-    ldy #LAYOUT_TESTS                      ; della routine di ridisegno
-    jsr GET_LAYOUT_ITEM         ; dei risultati.
+    lda _CURR_PAGE                  ; Legge il byte basso dell'indirizzo
+    ldy #LAYOUT_TESTS               ; della routine di ridisegno
+    jsr GET_LAYOUT_ITEM             ; dei risultati.
     sta _TESTS_VECTOR
 
-    lda _CURR_PAGE              ; Legge il byte alto dell'indirizzo
-    ldy #LAYOUT_TESTS+1                      ; della routine di ridisegno
-    jsr GET_LAYOUT_ITEM         ; dei risultati.
+    lda _CURR_PAGE                  ; Legge il byte alto dell'indirizzo
+    ldy #LAYOUT_TESTS+1             ; della routine di ridisegno
+    jsr GET_LAYOUT_ITEM             ; dei risultati.
     sta _TESTS_VECTOR+1
 
   .Exit_PRINT_TESTS:
-    jmp (_TESTS_VECTOR)         ; Esegue la routine di ridisegno, che ritorna al chiamante.
+    jmp (_TESTS_VECTOR)             ; Esegue la routine di ridisegno, che ritorna al chiamante.
 
 !zone
 

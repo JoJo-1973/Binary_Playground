@@ -10,10 +10,11 @@
 ;                 operazioni aritmetiche, logiche e di scorrimento su un byte:
 ;                 in alto gli operandi (A, M se serve, e il Carry), in basso i
 ;                 risultati e i flag NVZC dopo l'operazione.
-; CONTENUTO:      MAIN          Disegna la pagina corrente e attende un tasto
-;                 REFRESH_PAGE  Disegna la pagina scelta con un tasto
-;                 TOGGLE_CARRY  Inverte il flag di Carry e lo ridisegna
-;                 PUT_CHAR_ECM  Stampa un carattere in modo ECM
+; CONTENUTO:      MAIN              Disegna la pagina corrente e attende un tasto
+;                 REFRESH_PAGE      Disegna la pagina scelta con un tasto
+;                 TOGGLE_CARRY      Inverte il flag di Carry e lo ridisegna
+;                 GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
+;                 PUT_CHAR_ECM      Stampa un carattere in modo ECM
 ; DIPENDENZE:     "config.asm"
 ;                 <c64/kernal.asm>
 ;                 <c64/petscii.asm>
@@ -24,10 +25,9 @@
 ;                 <io/chars.asm>
 ;                 <system/vic_ii_tools.asm>
 ;                 <system/print_tools.asm>
-;                 "print_images.asm"
-;                 "draw_screen.asm"
-;                 "screen_layouts.asm"
+;                 "screen_drawing.asm"
 ;                 "opcode_tests.asm"
+;                 "data_tables.asm"
 ; REQUISITI ZP:   __BG_COL
 ; ==============================================================================
 
@@ -66,8 +66,8 @@ BASIC_START         = BASTXT    ; Inizio del programma BASIC
 ; ($089E-$0E56) Moduli del programma
 ; ($0E57-$13BD) Tabelle dati
 ; ($13BE-$13C6) Variabili globali
-; ($13C7-$142B) Programma principale (MAIN)
-; ($142C-$14D2) Altre subroutine del programma
+; ($13C7-$142B) Codice principale
+; ($142C-$14D2) Subroutine del codice
 
 ; ------------------------------------------------------------------------------
 ; Macro
@@ -90,9 +90,11 @@ LAYOUT_TEXT         = 5
 ; Inizio del codice
 ; ------------------------------------------------------------------------------
 
+; [MAPPA: Preambolo BASIC]
 *= BASIC_START
   +m_BASIC_Preamble 10, START, "BINARY PLAYGROUND (C) 2026 JOJO1973"
 
+; [MAPPA: Avvio]
 START:
   jmp MAIN
 
@@ -100,6 +102,7 @@ START:
 ; Moduli di libreria
 ; ------------------------------------------------------------------------------
 
+; [MAPPA: Moduli di libreria]
 !source <io/chars.asm>
 !source <system/vic_ii_tools.asm>
 !source <system/print_tools.asm>
@@ -108,15 +111,18 @@ START:
 ; Moduli del programma
 ; ------------------------------------------------------------------------------
 
+; [MAPPA: Moduli del programma]
 !source "screen_drawing.asm"
 !source "opcode_tests.asm"
-; MAPPA: Tabelle dati
+
+; [MAPPA: Tabelle dati]
 !source "data_tables.asm"
 
 ; ------------------------------------------------------------------------------
 ; Variabili globali
 ; ------------------------------------------------------------------------------
 
+; [MAPPA: Variabili globali]
 _A_IMAGE:
   !byte %10001111
 
@@ -145,6 +151,7 @@ _TESTS_VECTOR:
 ; Codice principale
 ; ------------------------------------------------------------------------------
 
+; [MAPPA: Codice principale]
 ; ==============================================================================
 ; SUBROUTINE: MAIN
 ; ------------------------------------------------------------------------------
@@ -172,9 +179,8 @@ _TESTS_VECTOR:
 ;                       <c64/symbols.asm>
 ;                       <chip/vic_ii.asm>
 ;                       <system/vic_ii_tools.asm>
-;                       "draw_screen.asm"
-;                       "print_images.asm"
-;                       "screen_layouts.asm"
+;                       "data_tables.asm"
+;                       "screen_drawing.asm"
 ; ==============================================================================
 !zone Main
 
@@ -246,6 +252,7 @@ _TESTS_VECTOR:
 ; Subroutine del codice
 ; ------------------------------------------------------------------------------
 
+; [MAPPA: Subroutine del codice]
 ; ==============================================================================
 ; SUBROUTINE: REFRESH_PAGE
 ; ------------------------------------------------------------------------------
@@ -265,7 +272,7 @@ _TESTS_VECTOR:
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal, Interrupt,
 ;                       Zero, Carry), __BG_COL
 ; Dipendenze Esterne:   <chip/vic_ii.asm>
-;                       "draw_screen.asm"
+;                       "screen_drawing.asm"
 ; ==============================================================================
 !zone Refresh_Page
 
@@ -303,8 +310,7 @@ _TESTS_VECTOR:
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
 ;                       _CARRY_IMAGE
-; Dipendenze Esterne:   "draw_screen.asm"
-;                       "screen_layouts.asm"
+; Dipendenze Esterne:   "screen_drawing.asm"
 ; ==============================================================================
 !zone Toggle_Carry
 

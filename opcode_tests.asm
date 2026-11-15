@@ -63,7 +63,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   "draw_screen.asm"
+; Dipendenze Esterne:   "screen_drawing.asm"
 ; ==============================================================================
 !zone Tests_1
 
@@ -101,7 +101,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   "draw_screen.asm"
+; Dipendenze Esterne:   "screen_drawing.asm"
 ; ==============================================================================
 !zone Tests_2
 
@@ -141,7 +141,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   "draw_screen.asm"
+; Dipendenze Esterne:   "screen_drawing.asm"
 ; ==============================================================================
 !zone Tests_3
 
@@ -182,7 +182,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   "draw_screen.asm"
+; Dipendenze Esterne:   "screen_drawing.asm"
 ; ==============================================================================
 !zone Tests_4
 
@@ -263,7 +263,7 @@
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal,
 ;                       Interrupt, Zero, Carry)
-; Dipendenze Esterne:   "draw_screen.asm"
+; Dipendenze Esterne:   "screen_drawing.asm"
 ; ==============================================================================
 !zone Tests_5
 
