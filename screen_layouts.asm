@@ -99,10 +99,8 @@ PAGE_HEADER:
 ;
 ;   byte 0    Riga di .A ($FF se la pagina non mostra .A)
 ;   byte 1    Riga della memoria ($FF se non è mostrata)
-;   byte 2    Maschera dei flag per .A e per la memoria
-;   byte 3-6  Maschere dei flag dei risultati da 1 a 4
-;   byte 7    Riga del Carry ($FF se non è mostrato)
-;   byte 8-9  Indirizzo della subroutine TESTS_n
+;   byte 2    Riga del Carry ($FF se non è mostrato)
+;   byte 3-4  Indirizzo della subroutine TESTS_n
 ;
 ; Seguono le etichette della pagina, nel formato dei messaggi
 ; di PRINT_MSG [NOTA #01 in print_tools.asm]. Nel titolo, i
@@ -113,11 +111,6 @@ PAGE_HEADER:
 PAGE_LAYOUT_1:
   !byte $FF
   !byte 5
-  !byte %10000010
-  !byte %10000010
-  !byte %10000010
-  !byte %10000010
-  !byte %11000011
   !byte $FF
   !word TESTS_1
 
@@ -132,11 +125,6 @@ PAGE_LAYOUT_1:
 PAGE_LAYOUT_2:
   !byte 5
   !byte 6
-  !byte %10000010
-  !byte %10000011
-  !byte %11000011
-  !byte %11000010
-  !byte %11000011
   !byte 8
   !word TESTS_2
 
@@ -155,11 +143,6 @@ PAGE_LAYOUT_2:
 PAGE_LAYOUT_3:
   !byte 5
   !byte 6
-  !byte %10000010
-  !byte %10000010
-  !byte %10000010
-  !byte %10000010
-  !byte %10000010
   !byte $FF
   !word TESTS_3
 
@@ -177,11 +160,6 @@ PAGE_LAYOUT_3:
 PAGE_LAYOUT_4:
   !byte 4
   !byte $FF
-  !byte %10000010
-  !byte %10000011
-  !byte %10000011
-  !byte %10000011
-  !byte %10000011
   !byte 5
   !word TESTS_4
 
@@ -213,11 +191,6 @@ PAGE_LAYOUT_4:
 PAGE_LAYOUT_5:
   !byte 5
   !byte 6
-  !byte %10000010
-  !byte %11000011
-  !byte %11000011
-  !byte %11000011
-  !byte %11000011
   !byte 8
   !word TESTS_5
 
