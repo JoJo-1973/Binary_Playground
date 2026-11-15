@@ -247,7 +247,7 @@ START:
 
   TOGGLE_CARRY:
     lda _CURR_PAGE              ; Controlla se il Carry è richiesto dal layout corrente.
-    ldy #7
+    ldy #LAYOUT_CARRY
     jsr GET_LAYOUT_ITEM
 
     cmp #$FF
@@ -305,7 +305,7 @@ START:
 !zone
 
 ; ------------------------------------------------------------------------------
-; Dati globali
+; Variabili globali
 ; ------------------------------------------------------------------------------
 
 _A_IMAGE:
@@ -339,3 +339,18 @@ PALETTE:
 
 PALETTE_STD:
   !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_LIGHT_BLUE
+
+; ------------------------------------------------------------------------------
+; Costanti globali
+; ------------------------------------------------------------------------------
+
+LAYOUT_ACC = 0
+LAYOUT_MEM = 1
+LAYOUT_FLAG_MASK =2
+LAYOUT_FLAG_MASK_R1=3
+LAYOUT_FLAG_MASK_R2=4
+LAYOUT_FLAG_MASK_R3=5
+LAYOUT_FLAG_MASK_R4=6
+LAYOUT_CARRY=7
+LAYOUT_TESTS=8
+LAYOUT_TEXT=10

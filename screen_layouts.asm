@@ -58,7 +58,7 @@ PAGE_LAYOUTS:
   !word PAGE_LAYOUT_5
 
 TITLE_SCREEN:
-  !text 6, 9, ECM_BG1, PETSCII_WHITE, "**********************", $00
+  !text 6, 9, ECM_BG3, PETSCII_WHITE, "**********************", $00
   !text 7, 9, "*                    *", $00
   !text 8, 9, "* BINARY  PLAYGROUND *", $00
   !text 9, 9, "*                    *", $00

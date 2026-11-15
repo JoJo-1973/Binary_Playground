@@ -212,12 +212,12 @@
     jsr PRINT_PAGE_HEADER       ; Disegna l'intestazione.
 
     lda _CURR_PAGE              ; Punta ZP_1 alla struttura della pagina, poi aggiunge lo
-    ldy #0                      ; scostamento della tabella dei messaggi.
+    ldy #LAYOUT_ACC                      ; scostamento della tabella dei messaggi.
     jsr GET_LAYOUT_ITEM
 
     clc
     lda ZP_1
-    adc #10
+    adc #LAYOUT_TEXT
     sta ZP_1
 
     lda ZP_1+1
@@ -268,7 +268,7 @@
 
   PRINT_A:
     lda _CURR_PAGE              ; La riga in cui si stampa .A è nel byte 0
-    ldy #0                      ; della struttura della pagina.
+    ldy #LAYOUT_ACC                      ; della struttura della pagina.
     jsr GET_LAYOUT_ITEM
 
     cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
@@ -332,7 +332,7 @@
 
   PRINT_M:
     lda _CURR_PAGE              ; La riga in cui si stampa la memoria è nel
-    ldy #1                      ; byte 1 della struttura della pagina.
+    ldy #LAYOUT_MEM                      ; byte 1 della struttura della pagina.
     jsr GET_LAYOUT_ITEM
 
     cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
@@ -394,7 +394,7 @@
 
   PRINT_CARRY:
     lda _CURR_PAGE              ; Recupera la riga in cui stampare il flag di
-    ldy #7                      ; Carry.
+    ldy #LAYOUT_CARRY                      ; Carry.
     jsr GET_LAYOUT_ITEM
 
     cmp #$FF                    ; Se la riga vale $FF non si stampa nulla.
@@ -570,12 +570,12 @@
 
   PRINT_TESTS:
     lda _CURR_PAGE              ; Legge il byte basso dell'indirizzo
-    ldy #8                      ; della routine di ridisegno
+    ldy #LAYOUT_TESTS                      ; della routine di ridisegno
     jsr GET_LAYOUT_ITEM         ; dei risultati.
     sta _TESTS_VECTOR
 
     lda _CURR_PAGE              ; Legge il byte alto dell'indirizzo
-    ldy #9                      ; della routine di ridisegno
+    ldy #LAYOUT_TESTS+1                      ; della routine di ridisegno
     jsr GET_LAYOUT_ITEM         ; dei risultati.
     sta _TESTS_VECTOR+1
 

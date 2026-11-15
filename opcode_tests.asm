@@ -794,13 +794,13 @@
     adc _M_IMAGE
     sta _RES_IMAGE              ; Salva il risultato.
 
-    cld                         ; Torna al modo binario.
-    cli                         ; Riattiva gli IRQ.
-
     php                         ; Salva il registro di stato.
     pla
 
     sta _P_IMAGE
+
+    cld                         ; Torna al modo binario.
+    cli                         ; Riattiva gli IRQ.
 
     lda #%11000011              ; Imposta la maschera dei flag.
     sta _FLAG_MASK
@@ -851,13 +851,13 @@
     sbc _M_IMAGE
     sta _RES_IMAGE              ; Salva il risultato.
 
-    cld                         ; Torna al modo binario.
-    cli                         ; Riattiva gli IRQ.
-
     php                         ; Salva il registro di stato.
     pla
 
     sta _P_IMAGE
+
+    cld                         ; Torna al modo binario.
+    cli                         ; Riattiva gli IRQ.
 
     lda #%11000011              ; Imposta la maschera dei flag.
     sta _FLAG_MASK
@@ -1676,28 +1676,3 @@
     rts
 
 !zone
-
-; ------------------------------------------------------------------------------
-; Risultati dei test
-; ------------------------------------------------------------------------------
-
-; Area dati variabile, non ancora scritta da nessun test.
-; Per ogni risultato: il byte del risultato e quello dei
-; flag associati.
-RESULTS:
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
-  !byte $00, $00
