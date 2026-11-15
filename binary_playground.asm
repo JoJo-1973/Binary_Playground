@@ -80,11 +80,11 @@ BASIC_START         = BASTXT    ; Inizio del programma BASIC
 ; Costanti globali
 ; ------------------------------------------------------------------------------
 
-LAYOUT_ACC          = 0
-LAYOUT_MEM          = 1
-LAYOUT_CARRY        = 2
-LAYOUT_TESTS        = 3
-LAYOUT_TEXT         = 5
+LAYOUT_ACC          = 0         ; Offset della posizione di .A nella struttura che descrive la pagina da visualizzare.
+LAYOUT_MEM          = 1         ; Offset della posizione di .M nella struttura che descrive la pagina da visualizzare.
+LAYOUT_CARRY        = 2         ; Offset della posizione di C nella struttura che descrive la pagina da visualizzare.
+LAYOUT_TESTS        = 3         ; Offset dell'indirizzo della batteria di test nella struttura che descrive la pagina da visualizzare.
+LAYOUT_LABELS       = 5         ; Offset dell'indirizzo della tabella di messaggi di testo nella struttura che descrive la pagina da visualizzare.
 
 ; ------------------------------------------------------------------------------
 ; Inizio del codice
@@ -124,28 +124,31 @@ START:
 
 ; [MAPPA: Variabili globali]
 _A_IMAGE:
-  !byte %10001111
+  !byte %10001111               ; Valore dell'accumulatore .A nei test.
 
 _M_IMAGE:
-  !byte %10000001
+  !byte %10000001               ; Valore della memoria M nei test.
 
 _P_IMAGE:
-  !byte 0
+  !byte 0                       ; Valore del registro di stato .P dopo i test.
 
 _RES_IMAGE:
-  !byte 0
+  !byte 0                       ; Valore del risultato dell'operazione dopo i test.
 
 _CARRY_IMAGE:
-  !byte 0
+  !byte 0                       ; Stato del flag di Carry prima del test.
 
 _FLAG_MASK:
-  !byte 0
+  !byte 0                       ; Maschera di selezione dei flag rilevanti per ciascun test.
 
 _CURR_PAGE:
-  !byte 0
+  !byte 0                       ; Indice della pagina di test attualmente visualizzata.
+
+_CURR_DIGIT:
+  !byte 0                       ; Cifra di .A (0-7) o di M (8-15) attualmente selezionata.
 
 _TESTS_VECTOR:
-  !word $0000
+  !word $0000                   ; Vettore che punta alla batteria di test da eseguire.
 
 ; ------------------------------------------------------------------------------
 ; Codice principale
@@ -226,11 +229,11 @@ _TESTS_VECTOR:
     +m_Bra .Read_Next_Key
 
   .Case_C:
-    jsr TOGGLE_CARRY
+    jsr TOGGLE_CARRY            ; Inverti il valore del Carry (0/1).
     +m_Bra .Read_Next_Key
 
   .Case_Help:
-    jsr PRINT_HELP
+    jsr PRINT_HELP              ; Mostra una schermata di aiuto.
     jsr REFRESH_PAGE
 
   .Read_Next_Key:
@@ -242,7 +245,7 @@ _TESTS_VECTOR:
     lda #<PALETTE_STD           ; Imposta i colori del VIC-II
     ldx #>PALETTE_STD
     jsr VIC_PALETTE
-    +m_VIC_Ext_Color_Off        ; e disattiva il modo Colore di Sfondo Esteso.
+    +m_VIC_Ext_Color_Off        ; e disattiva il modo Colore di Sfondo Esteso, poi esci.
 
     rts
 
@@ -360,11 +363,11 @@ _TESTS_VECTOR:
     tax
 
     lda PAGE_LAYOUTS,x          ; Punta ZP_1 alla struttura della pagina.
-    sta ZP_1
+    sta ZP_2
     lda PAGE_LAYOUTS+1,x
-    sta ZP_1+1
+    sta ZP_2+1
 
-    lda (ZP_1),y                ; Legge il byte della struttura.
+    lda (ZP_2),y                ; Legge il byte della struttura.
 
   .Exit_GET_LAYOUT_ITEM:
     rts

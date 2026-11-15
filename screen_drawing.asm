@@ -216,17 +216,14 @@
   PRINT_PAGE:
     jsr PRINT_PAGE_HEADER           ; Disegna l'intestazione.
 
-    lda _CURR_PAGE                  ; Punta ZP_1 alla struttura della pagina, poi aggiunge lo
-    ldy #LAYOUT_ACC                 ; scostamento della tabella dei messaggi.
+    lda _CURR_PAGE                  ; Leggi il byte basso dell'indirizzo della tabella dei messaggi.
+    ldy #LAYOUT_LABELS
     jsr GET_LAYOUT_ITEM
-
-    clc
-    lda ZP_1
-    adc #LAYOUT_TEXT
     sta ZP_1
 
-    lda ZP_1+1
-    adc #0
+    lda _CURR_PAGE                 ; Leggi il byte alto dell'indirizzo della tabella dei messaggi.
+    ldy #LAYOUT_LABELS+1
+    jsr GET_LAYOUT_ITEM
     sta ZP_1+1
 
   .Loop_Print_Msg_Table:

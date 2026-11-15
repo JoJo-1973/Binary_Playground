@@ -10,21 +10,17 @@
 
 ; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
 ; nell'ordine in cui li legge VIC_PALETTE.
+
+; Palette usata dal programma
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_BLACK
 
+; Palette standard del Commodore 64
 PALETTE_STD:
-  !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_LIGHT_BLUE
+  !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_WHITE, VIC_RED, VIC_CYAN, VIC_PURPLE, VIC_BLACK, VIC_LIGHT_BLUE
 
-; Indirizzi delle strutture delle pagine, in ordine di numero
-; di pagina (0-4).
-PAGE_LAYOUTS:
-  !word PAGE_LAYOUT_1
-  !word PAGE_LAYOUT_2
-  !word PAGE_LAYOUT_3
-  !word PAGE_LAYOUT_4
-  !word PAGE_LAYOUT_5
-
+; Schermata del titolo nel formato dei
+; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 TITLE_SCREEN:
   !text 6, 9, ECM_BG3, PETSCII_WHITE, "**********************", $00
   !text 7, 9, "*                    *", $00
@@ -34,6 +30,8 @@ TITLE_SCREEN:
   !text 14, 8, ECM_BG2, PETSCII_BLACK, " PRESS ANY KEY TO START ", ECM_BG0, $00
   !text $FF, $FF
 
+; Schermata di aiuto nel formato dei
+; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 HELP_SCREEN:
   !text 2, 1, ECM_BG1, " 1 ", ECM_BG0, PETSCII_WHITE, " INCREMENT & DECREMENT", PETSCII_BLACK, $00
   !text 4, 1, ECM_BG1, " 2 ", ECM_BG0, PETSCII_WHITE, " TESTS & COMPARISONS", PETSCII_BLACK, $00
@@ -62,26 +60,9 @@ PAGE_HEADER:
   !text 3, 35, ECM_BG2, "NVZC", $00
   !text $FF, $FF
 
-; ------------------------------------------------------------------------------
-; Strutture delle pagine. Ogni struttura comincia con 10 byte:
-;
-;   byte 0    Riga di .A ($FF se la pagina non mostra .A)
-;   byte 1    Riga della memoria ($FF se non è mostrata)
-;   byte 2    Riga del Carry ($FF se non è mostrato)
-;   byte 3-4  Indirizzo della subroutine TESTS_n
-;
-; Seguono le etichette della pagina, nel formato dei messaggi
-; di PRINT_MSG [NOTA #01 in print_tools.asm]. Nel titolo, i
-; codici PETSCII_WHITE e PETSCII_BLACK portano il testo in
-; bianco e poi di nuovo in nero.
-; ------------------------------------------------------------------------------
-
-PAGE_LAYOUT_1:
-  !byte $FF
-  !byte 5
-  !byte $FF
-  !word TESTS_1
-
+; Etichette da visualizzare in ciascuna pagina nel formato dei
+; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
+PAGE_1:
   !text 1, 16, ECM_BG3, PETSCII_WHITE, " INCREMENT & DECREMENT ", PETSCII_BLACK, $00
   !text 5, 6, ECM_BG2, "M:", ECM_BG0, $00
   !text 9, 1, ECM_BG1, " INCREMENT ", $00
@@ -90,12 +71,7 @@ PAGE_LAYOUT_1:
   !text 16, 4, ECM_BG2, "DEC:", $00
   !text $FF, $FF
 
-PAGE_LAYOUT_2:
-  !byte 5
-  !byte 6
-  !byte 8
-  !word TESTS_2
-
+PAGE_2:
   !text 1, 18, ECM_BG3, PETSCII_WHITE, " TESTS & COMPARISONS ", PETSCII_BLACK, $00
   !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
   !text 6, 6, ECM_BG2, "M:", ECM_BG0, $00
@@ -108,12 +84,7 @@ PAGE_LAYOUT_2:
   !text 22, 4, ECM_BG2, "BIT:", $00
   !text $FF, $FF
 
-PAGE_LAYOUT_3:
-  !byte 5
-  !byte 6
-  !byte $FF
-  !word TESTS_3
-
+PAGE_3:
   !text 1, 20, ECM_BG3, PETSCII_WHITE, " BOOLEAN OPERATORS ", PETSCII_BLACK, $00
   !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
   !text 6, 6, ECM_BG2, "M:", ECM_BG0, $00
@@ -125,12 +96,7 @@ PAGE_LAYOUT_3:
   !text 22, 4, ECM_BG2, "EOR:", $00
   !text $FF, $FF
 
-PAGE_LAYOUT_4:
-  !byte 4
-  !byte $FF
-  !byte 5
-  !word TESTS_4
-
+PAGE_4:
   !text 1, 19, ECM_BG3, PETSCII_WHITE, " SHIFTS & ROTATIONS ", PETSCII_BLACK, $00
   !text 4, 6, ECM_BG2, "A:", ECM_BG0, $00
   !text 5, 1, ECM_BG1, " SHIFT LEFT ", $00
@@ -156,12 +122,7 @@ PAGE_LAYOUT_4:
   !text 24, 3, ECM_BG2, "ROR4:", $00
   !text $FF, $FF
 
-PAGE_LAYOUT_5:
-  !byte 5
-  !byte 6
-  !byte 8
-  !word TESTS_5
-
+PAGE_5:
   !text 1, 27, ECM_BG3, PETSCII_WHITE, " ARITHMETIC ", PETSCII_BLACK, $00
   !text 5, 6, ECM_BG2, "A:", ECM_BG0, $00
   !text 6, 6, ECM_BG2, "M:", ECM_BG0, $00
@@ -174,3 +135,62 @@ PAGE_LAYOUT_5:
   !text 19, 4, ECM_BG2, "ADC:", $00
   !text 20, 4, ECM_BG2, "SBC:", $00
   !text $FF, $FF
+
+; ------------------------------------------------------------------------------
+; Strutture delle pagine. Ogni struttura comincia con 10 byte:
+;
+;   byte 0    Riga di .A ($FF se la pagina non mostra .A)
+;   byte 1    Riga della memoria ($FF se non è mostrata)
+;   byte 2    Riga del Carry ($FF se non è mostrato)
+;   byte 3-4  Indirizzo della subroutine TESTS_n
+;   byte 5-6  Indirizzo della tabella che descrive le etichette della pagina.
+;
+; La tabella delle etichette della pagina segue il formato dei messaggi
+; di PRINT_MSG [NOTA #01 in print_tools.asm]. Nel titolo, i
+; codici PETSCII_WHITE e PETSCII_BLACK portano il testo in
+; bianco e poi di nuovo in nero.
+; ------------------------------------------------------------------------------
+
+; Indirizzi delle strutture delle pagine, in ordine di numero
+; di pagina (0-4).
+PAGE_LAYOUTS:
+  !word PAGE_LAYOUT_1
+  !word PAGE_LAYOUT_2
+  !word PAGE_LAYOUT_3
+  !word PAGE_LAYOUT_4
+  !word PAGE_LAYOUT_5
+
+PAGE_LAYOUT_1:
+  !byte $FF
+  !byte 5
+  !byte $FF
+  !word TESTS_1
+  !word PAGE_1
+
+PAGE_LAYOUT_2:
+  !byte 5
+  !byte 6
+  !byte 8
+  !word TESTS_2
+  !word PAGE_2
+
+PAGE_LAYOUT_3:
+  !byte 5
+  !byte 6
+  !byte $FF
+  !word TESTS_3
+  !word PAGE_3
+
+PAGE_LAYOUT_4:
+  !byte 4
+  !byte $FF
+  !byte 5
+  !word TESTS_4
+  !word PAGE_4
+
+PAGE_LAYOUT_5:
+  !byte 5
+  !byte 6
+  !byte 8
+  !word TESTS_5
+  !word PAGE_5
