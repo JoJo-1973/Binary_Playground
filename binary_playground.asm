@@ -36,6 +36,7 @@
 ; ------------------------------------------------------------------------------
 
 !to "binary playgrnd", cbm
+!sl "binary_playground.lbl"
 
 ; ------------------------------------------------------------------------------
 ; Configurazione
@@ -61,10 +62,24 @@
 !source <system/standard.asm>
 
 ; ------------------------------------------------------------------------------
+; Mappa di memoria
+; ------------------------------------------------------------------------------
+
+BASIC_START         = BASTXT    ; Inizio del programma BASIC
+
+; ($0801-$0832) Preambolo BASIC
+; ($0833-$0835) Avvio
+; ($0836-$089D) Moduli di libreria
+; ($089E-$13BC) Moduli del programma
+; ($13BD-$1421) Programma principale (MAIN)
+; ($1422-$14B9) Altre subroutine del programma
+; ($14BA-$14D2) Variabili globali
+
+; ------------------------------------------------------------------------------
 ; Inizio del codice
 ; ------------------------------------------------------------------------------
 
-*= BASTXT
+*= BASIC_START
   +m_BASIC_Preamble 10, START, "BINARY PLAYGROUND (C) 2026 JOJO1973"
 
 START:
@@ -77,10 +92,48 @@ START:
 !source <io/chars.asm>
 !source <system/vic_ii_tools.asm>
 !source <system/print_tools.asm>
-!source "print_images.asm"
-!source "draw_screen.asm"
-!source "screen_layouts.asm"
+!source "screen_drawing.asm"
 !source "opcode_tests.asm"
+; MAPPA: Tabelle dati
+!source "data_tables.asm"
+
+; ------------------------------------------------------------------------------
+; Costanti globali
+; ------------------------------------------------------------------------------
+
+LAYOUT_ACC = 0
+LAYOUT_MEM = 1
+LAYOUT_CARRY=2
+LAYOUT_TESTS=3
+LAYOUT_TEXT=5
+
+; ------------------------------------------------------------------------------
+; Variabili globali
+; ------------------------------------------------------------------------------
+
+_A_IMAGE:
+  !byte %10001111
+
+_M_IMAGE:
+  !byte %10000001
+
+_P_IMAGE:
+  !byte %00000000
+
+_RES_IMAGE:
+  !byte $00
+
+_CARRY_IMAGE:
+  !byte 0
+
+_FLAG_MASK:
+  !byte %00000000
+
+_CURR_PAGE:
+  !byte 0
+
+_TESTS_VECTOR:
+  !word $0000
 
 ; ------------------------------------------------------------------------------
 ; Subroutine
@@ -265,6 +318,44 @@ START:
 !zone
 
 ; ==============================================================================
+; SUBROUTINE: GET_LAYOUT_ITEM
+; ------------------------------------------------------------------------------
+; Descrizione:  Legge il byte di indice .Y della struttura della pagina .A e
+;               lascia ZP_1 puntato all'inizio della struttura.
+;
+; Input:
+;   - .A (1 byte, CPU)   : Numero della pagina (0-4)
+;   - .Y (1 byte, CPU)   : Indice del byte nella struttura
+;
+; Output:
+;   - .A (1 byte, CPU)   : Byte letto
+;   - ZP_1 (2 byte, ZP)  : Indirizzo della struttura della pagina
+;
+; Variazione Stack (.S):
+;   - Stabile
+;
+; Registri Modificati:  .A, .X, .P (Negative, Zero, Carry), ZP_1 (2 byte)
+; Dipendenze Esterne:   <c64/symbols.asm>
+; ==============================================================================
+!zone Get_Layout_Item
+
+  GET_LAYOUT_ITEM:
+    asl a                       ; Trasforma .A in un indice della tabella.
+    tax
+
+    lda PAGE_LAYOUTS,x          ; Punta ZP_1 alla struttura della pagina.
+    sta ZP_1
+    lda PAGE_LAYOUTS+1,x
+    sta ZP_1+1
+
+    lda (ZP_1),y                ; Legge il byte della struttura.
+
+  .Exit_GET_LAYOUT_ITEM:
+    rts
+
+!zone
+
+; ==============================================================================
 ; SUBROUTINE: PUT_CHAR_ECM
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Driver di stampa del programma, usato dalle subroutine PRINT_*
@@ -303,49 +394,3 @@ START:
     rts
 
 !zone
-
-; ------------------------------------------------------------------------------
-; Variabili globali
-; ------------------------------------------------------------------------------
-
-_A_IMAGE:
-  !byte %10001111
-
-_M_IMAGE:
-  !byte %10000001
-
-_P_IMAGE:
-  !byte %00000000
-
-_RES_IMAGE:
-  !byte $00
-
-_CARRY_IMAGE:
-  !byte 0
-
-_FLAG_MASK:
-  !byte %00000000
-
-_CURR_PAGE:
-  !byte 0
-
-_TESTS_VECTOR:
-  !word $0000
-
-; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
-; nell'ordine in cui li legge VIC_PALETTE.
-PALETTE:
-  !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_BLACK
-
-PALETTE_STD:
-  !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_LIGHT_BLUE
-
-; ------------------------------------------------------------------------------
-; Costanti globali
-; ------------------------------------------------------------------------------
-
-LAYOUT_ACC = 0
-LAYOUT_MEM = 1
-LAYOUT_CARRY=2
-LAYOUT_TESTS=3
-LAYOUT_TEXT=5
