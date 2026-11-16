@@ -16,14 +16,14 @@
 ;                 PUT_CHAR_ECM      Stampa un carattere in modo ECM
 ; DIPENDENZE:     "config.asm"
 ;                 <c64/kernal.asm>
-;                 <c64/petscii.asm>
 ;                 <c64/symbols.asm>
 ;                 <chip/vic_ii.asm>
+;                 <system/petscii.asm>
 ;                 <system/branch.asm>
 ;                 <system/standard.asm>
+;                 <chip/vic_ii_tools.asm>
 ;                 <io/chars.asm>
-;                 <system/vic_ii_tools.asm>
-;                 <system/print_tools.asm>
+;                 <io/print_tools.asm>
 ;                 "screen_drawing.asm"
 ;                 "user_interface.asm"
 ;                 "opcode_tests.asm"
@@ -50,9 +50,9 @@
 ; ------------------------------------------------------------------------------
 
 !source <c64/kernal.asm>
-!source <c64/petscii.asm>
 !source <c64/symbols.asm>
 !source <chip/vic_ii.asm>
+!source <system/petscii.asm>
 
 ; ------------------------------------------------------------------------------
 ; Mappa di memoria
@@ -109,9 +109,9 @@ START:
 ; ------------------------------------------------------------------------------
 
 ; [MAPPA: Moduli di libreria]
+!source <chip/vic_ii_tools.asm>
 !source <io/chars.asm>
-!source <system/vic_ii_tools.asm>
-!source <system/print_tools.asm>
+!source <io/print_tools.asm>
 
 ; ------------------------------------------------------------------------------
 ; Moduli del programma
@@ -192,7 +192,7 @@ _TESTS_VECTOR:
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <chip/vic_ii.asm>
-;                       <system/vic_ii_tools.asm>
+;                       <chip/vic_ii_tools.asm>
 ;                       "data_tables.asm"
 ;                       "screen_drawing.asm"
 ;                       "user_interface.asm"
@@ -355,7 +355,7 @@ _TESTS_VECTOR:
 ;               colore di sfondo scelto da __BG_COL, e restituisce .A, .X e .Y
 ;               invariati. I codici ECM_BG0-ECM_BG3 cambiano il colore di sfondo
 ;               senza stampare nulla. Il lavoro lo fa la macro m_Put_ECM_Char
-;               [NOTA #02 in <system/print_tools.asm>].
+;               [NOTA #02 in <io/print_tools.asm>].
 ;
 ; Input:
 ;   - .A (1 byte, CPU)      : Codice PETSCII da stampare
@@ -373,8 +373,8 @@ _TESTS_VECTOR:
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <io/chars.asm>
+;                       <io/print_tools.asm>
 ;                       <system/branch.asm>
-;                       <system/print_tools.asm>
 ; ==============================================================================
 !zone Put_Char_ECM
 

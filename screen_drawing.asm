@@ -44,7 +44,7 @@
 ;                       ZP_1 (2 byte)
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
-;                       <system/print_tools.asm>
+;                       <io/print_tools.asm>
 ;                       "data_tables.asm"
 ; ==============================================================================
 !zone Print_Title
@@ -94,7 +94,7 @@
 ;                       ZP_1 (2 byte)
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
-;                       <system/print_tools.asm>
+;                       <io/print_tools.asm>
 ;                       "data_tables.asm"
 ; ==============================================================================
 !zone Print_Help
@@ -150,7 +150,7 @@
 ; Dipendenze Esterne:   <c64/kernal.asm>
 ;                       <c64/symbols.asm>
 ;                       <chip/vic_ii.asm>
-;                       <system/print_tools.asm>
+;                       <io/print_tools.asm>
 ;                       "binary_playground.asm"
 ;                       "data_tables.asm"
 ; ==============================================================================
@@ -208,7 +208,7 @@
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
 ;                       ZP_1 (2 byte)
 ; Dipendenze Esterne:   <c64/symbols.asm>
-;                       <system/print_tools.asm>
+;                       <io/print_tools.asm>
 ;                       "binary_playground.asm"
 ; ==============================================================================
 !zone Print_Page
@@ -612,7 +612,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
-; Dipendenze Esterne:   <c64/petscii.asm>
+; Dipendenze Esterne:   <system/petscii.asm>
 ; ==============================================================================
 !zone Print_Binary
 

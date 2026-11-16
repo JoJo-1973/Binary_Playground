@@ -6,7 +6,7 @@
 ;                 pagine (dati ed etichette) con la tabella dei loro indirizzi,
 ;                 l'intestazione comune e le schermate del titolo e dell'aiuto.
 ;                 Nomina simboli di altri file: TESTS_1-TESTS_5 di
-;                 "opcode_tests.asm", PETSCII_* ed ECM_BG* di <c64/petscii.asm>,
+;                 "opcode_tests.asm", PETSCII_* ed ECM_BG* di <system/petscii.asm>,
 ;                 VIC_* di <chip/vic_ii.asm>.
 ; ==============================================================================
 
