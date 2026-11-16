@@ -239,8 +239,8 @@ _TESTS_VECTOR:
     +m_Bra .Read_Next_Key
 
   .Case_C:
-    jsr TOGGLE_CARRY            ; Inverti il valore del Carry (0/1).
-    jsr PRINT_TESTS
+    jsr TOGGLE_CARRY            ; Inverti il valore del Carry (0/1)
+    jsr PRINT_TESTS             ; ed aggiorna tutti i test.
     +m_Bra .Read_Next_Key
 
   .Case_Help:
