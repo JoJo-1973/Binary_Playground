@@ -12,7 +12,6 @@
 ;                 risultati e i flag NVZC dopo l'operazione.
 ; CONTENUTO:      MAIN              Disegna la pagina corrente e attende un tasto
 ;                 REFRESH_PAGE      Disegna la pagina scelta con un tasto
-;                 TOGGLE_CARRY      Inverte il flag di Carry e lo ridisegna
 ;                 GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
 ;                 PUT_CHAR_ECM      Stampa un carattere in modo ECM
 ; DIPENDENZE:     "config.asm"
@@ -26,6 +25,7 @@
 ;                 <system/vic_ii_tools.asm>
 ;                 <system/print_tools.asm>
 ;                 "screen_drawing.asm"
+;                 "user_interface.asm"
 ;                 "opcode_tests.asm"
 ;                 "data_tables.asm"
 ; REQUISITI ZP:   __BG_COL
@@ -63,11 +63,13 @@ BASIC_START         = BASTXT    ; Inizio del programma BASIC
 ; ($0801-$0832) Preambolo BASIC
 ; ($0833-$0835) Avvio
 ; ($0836-$089D) Moduli di libreria
-; ($089E-$0E56) Moduli del programma
-; ($0E57-$13BD) Tabelle dati
-; ($13BE-$13C6) Variabili globali
-; ($13C7-$142B) Codice principale
-; ($142C-$14D2) Subroutine del codice
+; ($089E-$0E80) Moduli del programma
+; ($0E81-$0E90) Palette di colore
+; ($0E91-$13C5) Tavole dei messaggi
+; ($13C6-$13FC) Layout delle pagine di test
+; ($13FD-$1408) Variabili globali
+; ($1409-$1470) Codice principale
+; ($1471-$14FE) Subroutine del codice
 
 ; ------------------------------------------------------------------------------
 ; Macro
@@ -80,13 +82,12 @@ BASIC_START         = BASTXT    ; Inizio del programma BASIC
 ; Costanti globali
 ; ------------------------------------------------------------------------------
 
-; Offset dei vari campi della struttura del layout della pagina.
-LAYOUT_ACC          = 0         ; Riga alla quale visualizzare l'accumulatore ($FF = non presente).
-LAYOUT_MEM          = 1         ; Riga alla quale visualizzare la memoria ($FF = non presente).
-LAYOUT_CARRY        = 2         ; Riga alla quale visualizzare il flag di Carry ($FF = non presente).
-LAYOUT_FIRST_DIGIT    = 3         ; Indice della prima cifra sulla quale si può muovere il cursore.
-LAYOUT_LAST_DIGIT    = 4         ; Indice dell'ultim cifra sulla quale si può muovere il cursore.
-
+; Offset dei campi della struttura del layout di una pagina.
+LAYOUT_ACC          = 0         ; Riga di .A ($FF = non presente).
+LAYOUT_MEM          = 1         ; Riga della memoria ($FF = non presente).
+LAYOUT_CARRY        = 2         ; Riga del flag di Carry ($FF = non presente).
+LAYOUT_FIRST_DIGIT  = 3         ; Indice della prima cifra modificabile.
+LAYOUT_LAST_DIGIT   = 4         ; Indice dell'ultima cifra modificabile.
 
 LAYOUT_TESTS        = 5         ; Indirizzo della batteria di test da eseguire.
 LAYOUT_LABELS       = 7         ; Indirizzo della tabella di etichette da stampare.
@@ -194,6 +195,7 @@ _TESTS_VECTOR:
 ;                       <system/vic_ii_tools.asm>
 ;                       "data_tables.asm"
 ;                       "screen_drawing.asm"
+;                       "user_interface.asm"
 ; ==============================================================================
 !zone Main
 
@@ -310,7 +312,7 @@ _TESTS_VECTOR:
 ; SUBROUTINE: GET_LAYOUT_ITEM
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Legge il byte di indice .Y della struttura della pagina .A e
-;               lascia ZP_1 puntato all'inizio della struttura.
+;               lascia ZP_2 puntato all'inizio della struttura.
 ;
 ; Input:
 ;   - .A (1 byte, CPU)   : Numero della pagina (0-4)
@@ -318,12 +320,12 @@ _TESTS_VECTOR:
 ;
 ; Output:
 ;   - .A (1 byte, CPU)   : Byte letto
-;   - ZP_1 (2 byte, ZP)  : Indirizzo della struttura della pagina
+;   - ZP_2 (2 byte, ZP)  : Indirizzo della struttura della pagina
 ;
 ; Variazione Stack (.S):
 ;   - Stabile
 ;
-; Registri Modificati:  .A, .X, .P (Negative, Zero, Carry), ZP_1 (2 byte)
+; Registri Modificati:  .A, .X, .P (Negative, Zero, Carry), ZP_2 (2 byte)
 ; Dipendenze Esterne:   <c64/symbols.asm>
 ; ==============================================================================
 !zone Get_Layout_Item
@@ -332,7 +334,7 @@ _TESTS_VECTOR:
     asl a                       ; Trasforma .A in un indice della tabella.
     tax
 
-    lda PAGE_LAYOUTS,x          ; Punta ZP_1 alla struttura della pagina.
+    lda PAGE_LAYOUTS,x          ; Punta ZP_2 alla struttura della pagina.
     sta ZP_2
     lda PAGE_LAYOUTS+1,x
     sta ZP_2+1

@@ -8,21 +8,20 @@
 ; DIPENDENZE:     Nessuna
 ; ==============================================================================
 
-; Colori per EXTCOL, BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR,
-; nell'ordine in cui li legge VIC_PALETTE.
-
 ; [MAPPA: Palette di colore]
-; Palette usata dal programma
+; Palette usata dal programma: i colori per EXTCOL,
+; BGCOL0-BGCOL3, SPMC0, SPMC1 e COLOR, nell'ordine in cui li
+; legge VIC_PALETTE.
 PALETTE:
   !byte VIC_BLACK, VIC_GREEN, VIC_LIGHT_GREY, VIC_YELLOW, VIC_BLACK, VIC_TRANSPARENT, VIC_TRANSPARENT, VIC_BLACK
 
-; Palette standard del Commodore 64
+; Palette standard del Commodore 64.
 PALETTE_STD:
   !byte VIC_LIGHT_BLUE, VIC_BLUE, VIC_WHITE, VIC_RED, VIC_CYAN, VIC_PURPLE, VIC_BLACK, VIC_LIGHT_BLUE
 
 ; [MAPPA: Tavole dei messaggi]
-; Schermata del titolo nel formato dei
-; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
+; Schermata del titolo nel formato dei messaggi di PRINT_MSG
+; [NOTA #01 in print_tools.asm].
 TITLE_SCREEN:
   !text 6, 9, ECM_BG3, PETSCII_WHITE, "**********************", $00
   !text 7, 9, "*                    *", $00
@@ -32,8 +31,8 @@ TITLE_SCREEN:
   !text 14, 8, ECM_BG2, PETSCII_BLACK, " PRESS ANY KEY TO START ", ECM_BG0, $00
   !text $FF, $FF
 
-; Schermata di aiuto nel formato dei
-; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
+; Schermata di aiuto nel formato dei messaggi di PRINT_MSG
+; [NOTA #01 in print_tools.asm].
 HELP_SCREEN:
   !text 2, 1, ECM_BG1, " 1 ", ECM_BG0, PETSCII_WHITE, " INCREMENT & DECREMENT", PETSCII_BLACK, $00
   !text 4, 1, ECM_BG1, " 2 ", ECM_BG0, PETSCII_WHITE, " TESTS & COMPARISONS", PETSCII_BLACK, $00
@@ -50,7 +49,7 @@ HELP_SCREEN:
 ; Intestazione comune a tutte le pagine, nel formato dei
 ; messaggi di PRINT_MSG [NOTA #01 in print_tools.asm].
 PAGE_HEADER:
-  !text 0, 1, ECM_BG1, PETSCII_BLACK," BINARY PLAYGROUND ", $00
+  !text 0, 1, ECM_BG1, PETSCII_BLACK, " BINARY PLAYGROUND ", $00
   !text 0, 29, ECM_BG2, "?", ECM_BG0, " FOR HELP", $00
   !text 1, 1, ECM_BG2, "PAGE #", $00
   !text 3, 1, ECM_BG1, " LOAD ", $00
@@ -140,13 +139,15 @@ PAGE_5:
 
 ; [MAPPA: Layout delle pagine di test]
 ; ------------------------------------------------------------------------------
-; Strutture delle pagine. Ogni struttura comincia con 10 byte:
+; Strutture delle pagine. Ogni struttura è di 9 byte:
 ;
 ;   byte 0    Riga di .A ($FF se la pagina non mostra .A)
 ;   byte 1    Riga della memoria ($FF se non è mostrata)
 ;   byte 2    Riga del Carry ($FF se non è mostrato)
-;   byte 3-4  Indirizzo della subroutine TESTS_n
-;   byte 5-6  Indirizzo della tabella che descrive le etichette della pagina.
+;   byte 3    Indice della prima cifra modificabile (0-15)
+;   byte 4    Indice dell'ultima cifra modificabile (0-15)
+;   byte 5-6  Indirizzo della subroutine TESTS_n
+;   byte 7-8  Indirizzo della tabella che descrive le etichette della pagina.
 ;
 ; La tabella delle etichette della pagina segue il formato dei messaggi
 ; di PRINT_MSG [NOTA #01 in print_tools.asm]. Nel titolo, i

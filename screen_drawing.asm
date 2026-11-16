@@ -189,8 +189,8 @@
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Disegna la pagina corrente: l'intestazione comune
 ;               (PRINT_PAGE_HEADER) e le etichette della pagina, cioè la tabella
-;               dei messaggi che nella struttura della pagina segue i 10 byte
-;               dei dati.
+;               dei messaggi il cui indirizzo è nei byte 7-8 della struttura
+;               della pagina.
 ;
 ;               Le subroutine CLRSCR e PLOT del Kernal e il driver __PUT_CHAR
 ;               alterano proprie celle di lavoro, il cui contenuto non è
@@ -216,12 +216,12 @@
   PRINT_PAGE:
     jsr PRINT_PAGE_HEADER           ; Disegna l'intestazione.
 
-    lda _CURR_PAGE                  ; Leggi il byte basso dell'indirizzo della tabella dei messaggi.
+    lda _CURR_PAGE                  ; Legge il byte basso dell'indirizzo delle etichette.
     ldy #LAYOUT_LABELS
     jsr GET_LAYOUT_ITEM
     sta ZP_1
 
-    lda _CURR_PAGE                 ; Leggi il byte alto dell'indirizzo della tabella dei messaggi.
+    lda _CURR_PAGE                  ; Legge il byte alto dell'indirizzo delle etichette.
     ldy #LAYOUT_LABELS+1
     jsr GET_LAYOUT_ITEM
     sta ZP_1+1
@@ -367,8 +367,8 @@
 ; SUBROUTINE: PRINT_CARRY
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Stampa il valore del flag di Carry (_CARRY_IMAGE), "0" o "1",
-;               alla colonna 38 della riga indicata dal byte 7 della struttura
-;               della pagina corrente. Se il byte 7 vale $FF la pagina non
+;               alla colonna 38 della riga indicata dal byte 2 della struttura
+;               della pagina corrente. Se il byte 2 vale $FF la pagina non
 ;               mostra il Carry e non stampa nulla.
 ;
 ;               La subroutine PLOT del Kernal e il driver __PUT_CHAR alterano
@@ -385,8 +385,11 @@
 ; Variazione Stack (.S):
 ;   - Stabile
 ;
-; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry)
+; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
+;                       COLOR, __BG_COL
 ; Dipendenze Esterne:   <c64/kernal.asm>
+;                       <c64/symbols.asm>
+;                       <chip/vic_ii.asm>
 ;                       "binary_playground.asm"
 ; ==============================================================================
 !zone Print_Carry
@@ -554,7 +557,7 @@
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Salta alla routine che ridisegna i risultati dei test della
 ;               pagina corrente: ne legge l'indirizzo dalla struttura della
-;               pagina (byte 8-9), lo salva in _TESTS_VECTOR e lo esegue.
+;               pagina (byte 5-6), lo salva in _TESTS_VECTOR e lo esegue.
 ;               L'RTS della routine di ridisegno riporta al chiamante
 ;               di PRINT_TESTS.
 ;
@@ -568,8 +571,7 @@
 ;   - Stabile
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Decimal,
-;                       Interrupt, Zero, Carry), ZP_1 (2 byte),
-;                       _TESTS_VECTOR
+;                       Interrupt, Zero, Carry), _TESTS_VECTOR
 ; Dipendenze Esterne:   "binary_playground.asm"
 ;                       "opcode_tests.asm"
 ; ==============================================================================

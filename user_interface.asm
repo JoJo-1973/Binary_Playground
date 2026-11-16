@@ -1,8 +1,20 @@
 ; ==============================================================================
+; FILE:           user_interface.asm
+; PROGETTO:       Binary Playground (Binary_Playground.c64)
+; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
+; DESCRIZIONE:    Interfaccia utente: le subroutine con cui l'utente modifica i
+;                 valori mostrati dal programma. Per ora contiene solo
+;                 l'inversione del flag di Carry.
+; CONTENUTO:      TOGGLE_CARRY  Inverte il flag di Carry e lo ridisegna
+; DIPENDENZE:     Nessuna
+; REQUISITI ZP:   Nessuno
+; ==============================================================================
+
+; ==============================================================================
 ; SUBROUTINE: TOGGLE_CARRY
 ; ------------------------------------------------------------------------------
 ; Descrizione:  Inverte il valore del Carry mostrato e lo ristampa, se la pagina
-;               corrente lo mostra (byte 7 della struttura diverso da $FF).
+;               corrente lo mostra (byte 2 della struttura diverso da $FF).
 ;
 ; Input:
 ;   - _CURR_PAGE (1 byte, RAM)   : Indice della pagina corrente (0-4)
@@ -16,7 +28,8 @@
 ;
 ; Registri Modificati:  .A, .X, .Y, .P (Negative, oVerflow, Zero, Carry),
 ;                       _CARRY_IMAGE
-; Dipendenze Esterne:   "screen_drawing.asm"
+; Dipendenze Esterne:   "binary_playground.asm"
+;                       "screen_drawing.asm"
 ; ==============================================================================
 !zone Toggle_Carry
 
