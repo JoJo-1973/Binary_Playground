@@ -14,7 +14,7 @@
 ;                 REFRESH_PAGE      Disegna la pagina scelta con un tasto
 ;                 GET_LAYOUT_ITEM   Legge un byte della struttura di una pagina
 ;                 PUT_CHAR_ECM      Stampa un carattere in modo ECM
-; DIPENDENZE:     "config.asm"
+; DIPENDENZE:     "config_binary_playground.asm"
 ;                 <c64/kernal.asm>
 ;                 <c64/symbols.asm>
 ;                 <chip/vic_ii.asm>
@@ -35,7 +35,8 @@
 ; Uscita e processore
 ; ------------------------------------------------------------------------------
 
-!to "binary playgrnd", cbm
+!to "binary playgrnd.prg", cbm
+!cpu 6510
 !sl "binary_playground.lbl"
 
 ; ------------------------------------------------------------------------------
@@ -43,7 +44,7 @@
 ; ------------------------------------------------------------------------------
 
 ; PROVA TEMPORANEA: once sospeso (LIB-01).
-!source "config.asm"
+!source "config_binary_playground.asm"
 
 ; ------------------------------------------------------------------------------
 ; Simboli

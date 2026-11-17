@@ -1,10 +1,10 @@
 ; ==============================================================================
-; FILE:           config.asm
-; PROGETTO:       File di Configurazione del Progetto Binary Playground (Binary_Playground.c64)
+; FILE:           config_binary_playground.asm
+; PROGETTO:       Binary Playground (Binary_Playground.c64)
 ; TARGET:         ACME Assembler / MOS 6510 (Commodore 64)
-; DESCRIZIONE:    Configurazione del progetto Binary Playground: parametri di
-;                 configurazione e punti di personalizzazione delle librerie
-;                 c64, chip, io, math e system.
+; DESCRIZIONE:    Configurazione del programma binary_playground.asm: parametri di
+;                 configurazione e punti di personalizzazione delle librerie c64,
+;                 chip, io, math e system.
 ; ==============================================================================
 
 ; ------------------------------------------------------------------------------
