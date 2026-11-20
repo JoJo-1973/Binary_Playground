@@ -43,17 +43,16 @@
 ; Configurazione
 ; ------------------------------------------------------------------------------
 
-; PROVA TEMPORANEA: once sospeso (LIB-01).
-!source "config_binary_playground.asm"
+!source "config_binary_playground.asm", once
 
 ; ------------------------------------------------------------------------------
 ; Simboli
 ; ------------------------------------------------------------------------------
 
-!source <c64/kernal.asm>
-!source <c64/symbols.asm>
-!source <chip/vic_ii.asm>
-!source <system/petscii.asm>
+!source <c64/kernal.asm>, once
+!source <c64/symbols.asm>, once
+!source <chip/vic_ii.asm>, once
+!source <system/petscii.asm>, once
 
 ; ------------------------------------------------------------------------------
 ; Mappa di memoria
@@ -76,8 +75,8 @@ BASIC_START         = BASTXT    ; Inizio del programma BASIC
 ; Macro
 ; ------------------------------------------------------------------------------
 
-!source <system/branch.asm>
-!source <system/standard.asm>
+!source <system/branch.asm>, once
+!source <system/standard.asm>, once
 
 ; ------------------------------------------------------------------------------
 ; Costanti globali
@@ -110,19 +109,19 @@ START:
 ; ------------------------------------------------------------------------------
 
 ; [MAPPA: Moduli di libreria]
-!source <chip/vic_ii_tools.asm>
-!source <io/chars.asm>
-!source <io/print_tools.asm>
+!source <chip/vic_ii_tools.asm>, once
+!source <io/chars.asm>, once
+!source <io/print_tools.asm>, once
 
 ; ------------------------------------------------------------------------------
 ; Moduli del programma
 ; ------------------------------------------------------------------------------
 
 ; [MAPPA: Moduli del programma]
-!source "screen_drawing.asm"
-!source "user_interface.asm"
-!source "opcode_tests.asm"
-!source "data_tables.asm"
+!source "screen_drawing.asm", once
+!source "user_interface.asm", once
+!source "opcode_tests.asm", once
+!source "data_tables.asm", once
 
 ; ------------------------------------------------------------------------------
 ; Variabili globali
